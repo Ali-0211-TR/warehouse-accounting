@@ -1,0 +1,1 @@
+export { DiscountManagement } from './ui/discount-management'

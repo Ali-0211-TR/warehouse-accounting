@@ -1,0 +1,1 @@
+export { ProductManagement } from './ui/product-management'

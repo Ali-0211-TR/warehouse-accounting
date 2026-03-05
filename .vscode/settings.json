@@ -1,0 +1,132 @@
+{
+  // Remove Java settings since you don't have Java code
+  // "java.configuration.updateBuildConfiguration": "interactive"
+
+  // Editor settings
+  "files.autoSave": "off",
+  // "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "never" // "explicit",
+    // "source.organizeImports": "explicit"
+  },
+
+  // Language-specific settings
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    // "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+    // "editor.formatOnSave": true
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    // "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+    // "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    // "editor.formatOnSave": true
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    // "editor.formatOnSave": true
+  },
+
+  // Rust settings
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+    // "editor.formatOnSave": true
+  },
+  "[toml]": {
+    "editor.defaultFormatter": "tamasfe.even-better-toml"
+    // "editor.formatOnSave": true
+  },
+
+  // Rust-analyzer settings
+  "rust-analyzer.imports.granularity.group": "module",
+  "rust-analyzer.imports.prefix": "crate",
+  "rust-analyzer.cargo.buildScripts.enable": true,
+  // Tauri требует proc-macros и сборочных скриптов
+  "rust-analyzer.procMacro.enable": true,
+  "rust-analyzer.cargo.runBuildScripts": true,
+  "rust-analyzer.cargo.loadOutDirsFromCheck": true,
+
+  "rust-analyzer.checkOnSave.enable": true,
+  "rust-analyzer.checkOnSave.command": "clippy",
+  "rust-analyzer.checkOnSave.allFeatures": true,
+  "rust-analyzer.assist.importGranularity": "module",
+
+  // подгружать все фичи (если нужно)
+  "rust-analyzer.cargo.allFeatures": true,
+
+  "rust-analyzer.completion.addCallArgumentSnippets": true,
+  "rust-analyzer.completion.addCallParenthesis": true,
+  "rust-analyzer.inlayHints.enable": true,
+  "rust-analyzer.inlayHints.parameterHints": true,
+  "rust-analyzer.inlayHints.typeHints": true,
+
+  // Tauri-specific settings
+  "tauri.dev.hotReload": true,
+  "tauri.dev.openDevtools": false,
+
+  // Prettier settings
+  "prettier.requireConfig": false,
+  "prettier.useEditorConfig": false,
+
+  // File associations for Tauri
+  "files.associations": {
+    "*.rs": "rust",
+    "Cargo.toml": "toml",
+    "Cargo.lock": "toml",
+    "tauri.conf.json": "jsonc"
+  },
+
+  // Search exclusions for better performance
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/target": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.git": true,
+    "**/Cargo.lock": true
+  },
+
+  // File watcher exclusions for better performance
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/target/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true
+  },
+
+  // Optional: Additional settings for better development experience
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "editor.rulers": [80, 120],
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrapColumn": 100,
+
+  // Terminal settings for Tauri development
+  "terminal.integrated.env.osx": {
+    "RUST_LOG": "debug"
+  },
+
+  // Code lens settings
+  "rust-analyzer.lens.enable": true,
+  "rust-analyzer.lens.run": true,
+  "rust-analyzer.lens.debug": true,
+  "rust-analyzer.lens.implementations": true,
+  "rust-analyzer.lens.references": true,
+  "rust-analyzer.lens.methodReferences": true,
+  "rust-analyzer.lens.enumVariantReferences": true
+}

@@ -1,0 +1,31 @@
+pub mod camera_entity;
+pub mod card_entity;
+pub mod client_entity;
+pub mod contract_car_entity;
+pub mod contract_entity;
+pub mod contract_product_entity;
+pub mod device_config_entity;
+pub mod discount_entity;
+pub mod dispenser_entity;
+pub mod dispenser_port_entity;
+pub mod fueling_order_entity;
+pub mod group_entity;
+pub mod mark_entity;
+pub mod nozzle_entity;
+pub mod order_entity;
+pub mod order_item_discount_entity;
+pub mod order_item_entity;
+pub mod order_item_tax_entity;
+pub mod payment_entity;
+pub mod photo_entity;
+pub mod picture_entity;
+pub mod price_entity;
+pub mod product_entity;
+pub mod shift_entity;
+// pub mod shop_entity; // DEPRECATED: Using device_config instead
+// pub mod station_entity; // DEPRECATED: Using device_config instead
+pub mod limit_entity;
+pub mod tank_entity;
+pub mod tax_entity;
+pub mod unit_entity;
+pub mod user_entity;

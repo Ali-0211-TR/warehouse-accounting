@@ -1,0 +1,23 @@
+node_modules
+/target/
+/dist/
+
+# Tauri generated files
+src-tauri/gen/
+src-tauri/target/
+
+# Android signing
+*.jks
+*.keystore
+src-tauri/gen/android/key.properties
+
+# APK files
+*.apk
+*.aab
+*.idsig
+*.sig
+*.minisig
+
+
+*.env
+*.db
