@@ -4,11 +4,6 @@ use crate::domain::entities::limit_entity::LimitEntity;
 use crate::domain::repositories::LimitRepository;
 use crate::shared::ctx::Ctx;
 
-pub async fn get_limits_by_card_id_usecase(ctx: &Ctx, card_id: String) -> Result<Vec<LimitEntity>> {
-    let data = LimitRepository::get_by_card_id(ctx.get_db(), card_id).await?;
-    Ok(data)
-}
-
 pub async fn get_limit_by_id_usecase(ctx: &Ctx, id: String) -> Result<LimitEntity> {
     let data = LimitRepository::get_by_id(ctx.get_db(), id).await?;
     Ok(data)

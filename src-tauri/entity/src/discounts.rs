@@ -25,8 +25,6 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::contract_products::Entity")]
-    ContractProducts,
     #[sea_orm(
         belongs_to = "super::device_config::Entity",
         from = "Column::DeviceId",
@@ -41,12 +39,6 @@ pub enum Relation {
     DiscountToProduct,
     #[sea_orm(has_many = "super::limits::Entity")]
     Limits,
-}
-
-impl Related<super::contract_products::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::ContractProducts.def()
-    }
 }
 
 impl Related<super::device_config::Entity> for Entity {

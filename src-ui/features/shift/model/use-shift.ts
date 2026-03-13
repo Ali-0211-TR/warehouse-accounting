@@ -6,11 +6,9 @@ import { SortOrder } from "@/shared/bindings/SortOrder";
 import { ShiftSortField } from "@/entities/shift/model/types";
 import { useTranslation } from "react-i18next";
 import { ShiftDTO } from "@/shared/bindings/dtos/ShiftDTO";
-import { useDispenser } from "@/features/dispenser";
-import { dispenserApi, useDispenserStore } from "@/entities/dispenser";
 
 export function useShift() {
-  const { t } = useTranslation(); // Fix: Add translation hook
+  const { t } = useTranslation();
   const [selectedShift, setSelectedShift] = useState<ShiftEntity | null>(null);
 
   const [filtersVisible, setFiltersVisible] = useState(false);
@@ -36,12 +34,8 @@ export function useShift() {
     pageChange,
   } = useShiftStore();
 
-  const { dispensers } = useDispenser();
-  const store = useDispenserStore();
-
   const { showErrorToast, showSuccessToast } = useToast();
 
-  // Fix: Better error handling and cleanup
   useEffect(() => {
     let isMounted = true;
 
@@ -100,25 +94,6 @@ export function useShift() {
     async (data: ShiftDTO) => {
       setOpeningShift(true);
       try {
-        var {hasErrorInComm, dName}: {hasErrorInComm: boolean; dName: Array<string>} = {
-          hasErrorInComm: false,
-          dName: []
-        };
-
-         dispensers.map((d) => {
-           const hasErrorInCommTemp = (store.getDispenserCommStatus(d.id ?? '') === "offline") && d.state === 'Active';
-           if (hasErrorInCommTemp) {
-             dName.push(d.name);
-             hasErrorInComm = hasErrorInCommTemp;
-           }
-          // return hasErrorInComm;
-        });
-
-        if (hasErrorInComm) {
-          showErrorToast(`Dispenser ${dName.join(', ')} is not Online`);
-          return;
-        } else {
-        }
         await openShift(data);
         showSuccessToast(t("shift.opened_successfully"));
         setOpenShiftVisible(false);
@@ -134,38 +109,8 @@ export function useShift() {
   const onCloseShiftSubmit = useCallback(
     async (data: ShiftDTO) => {
       setClosingShift(true);
-
       try {
-        var {hasErrorInComm, dName}: {hasErrorInComm: boolean; dName: Array<string>} = {
-          hasErrorInComm: false,
-          dName: []
-        };
-
-         dispensers.map((d) => {
-           const hasErrorInCommTemp = (store.getDispenserCommStatus(d.id ?? '') === "offline") && d.state === 'Active';
-           if (hasErrorInCommTemp) {
-             dName.push(d.name);
-             hasErrorInComm = hasErrorInCommTemp;
-           }
-          // return hasErrorInComm;
-        });
-
-        if (hasErrorInComm) {
-          showErrorToast(`Dispenser ${dName.join(', ')} is not Online`);
-          return;
-        } else {
-        }
-
-        // Очистка totals
-        for (const d of dispensers) {
-          for (const n of d.nozzles) {
-            await dispenserApi.clearShiftTotal(n.address); // если async
-            // dispenserApi.clearShiftTotal(n.address);     // если sync
-          }
-        }
-
         await closeShift(data);
-
         showSuccessToast(t("shift.closed_successfully"));
         setCloseShiftVisible(false);
       } catch (error: any) {
@@ -175,8 +120,6 @@ export function useShift() {
       }
     },
     [
-      dispensers,
-      dispenserApi,
       closeShift,
       showErrorToast,
       showSuccessToast,

@@ -171,7 +171,7 @@ export function createProductMovementPrintConfig(
                 order.order_type
               )}</td>
               <td style="padding: 6px; border: 1px solid #e5e7eb;">${formatDate(
-                order.d_move
+                order.d_move ?? ""
               )}</td>
               <td style="padding: 6px; border: 1px solid #e5e7eb;">${
                 order.client?.name || "-"

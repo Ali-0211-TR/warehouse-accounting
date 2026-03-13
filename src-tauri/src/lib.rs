@@ -1,14 +1,9 @@
 use adapters::ipc::*;
-use dashmap::DashMap;
 use domain::{
-    entities::dispenser_entity::DispenserEntity,
-    repositories::{DispenserRepository, OrderRepository, ShiftRepository},
+    repositories::{OrderRepository, ShiftRepository},
 };
 use infrastructure::{
     database::model_store::DataStore,
-    dispenser_serial::{
-        dispenser_port_manager::DispenserPortManager, serial_receiver::dispesner_serial_receiver,
-    },
 };
 // use log::{error, info, warn};
 use migration::MigratorTrait;
@@ -19,7 +14,6 @@ use shared::{
 };
 // use utoipa::openapi::info; // Unused
 use std::{
-    collections::HashMap,
     sync::{Arc, Mutex},
     time::Duration,
 };
@@ -133,7 +127,7 @@ pub async fn run() {
             info!("[SETUP] Resolving app data directory...");
             let app_data_dir = match app
                 .path()
-                .resolve("texnouz_station.db", BaseDirectory::AppData)
+                .resolve("sklad_uchot.db", BaseDirectory::AppData)
             {
                 Ok(path) => {
                     println!("[SETUP] App data directory resolved: {:?}", path);
@@ -178,28 +172,11 @@ pub async fn run() {
             ipc_app::get_name,
             ipc_app::get_version,
             ipc_app::set_title,
-            // //----camera----
-            ipc_camera::get_cameras,
-            ipc_camera::get_all_cameras,
-            ipc_camera::save_camera,
-            ipc_camera::delete_camera,
-            ipc_camera::delete_camera_permanent,
-            ipc_camera::restore_camera,
-            //----card----
-            ipc_card::save_card,
-            ipc_card::get_cards,
-            ipc_card::get_card_by_id,
-            ipc_card::get_cards_by_client_id,
-            ipc_card::delete_card,
+            // //----camera---- REMOVED
             //----limit----
             ipc_limit::save_limit,
-            ipc_limit::get_limits_by_card_id,
             ipc_limit::get_limit_by_id,
             ipc_limit::delete_limit,
-            //----car----
-            ipc_car::save_car,
-            ipc_car::get_cars,
-            ipc_car::delete_car,
             //----client----
             ipc_client::save_client,
             ipc_client::get_clients,
@@ -208,18 +185,6 @@ pub async fn run() {
             ipc_client::delete_client_permanent,
             ipc_client::restore_client,
             ipc_client::get_client_by_id,
-            //----contract_product----
-            ipc_contract_product::save_contract_product,
-            ipc_contract_product::get_contract_products,
-            ipc_contract_product::delete_contract_product,
-            //----contract----
-            ipc_contract::save_contract,
-            ipc_contract::get_contracts,
-            ipc_contract::get_all_contracts,
-            ipc_contract::delete_contract,
-            ipc_contract::delete_contract_permanent,
-            ipc_contract::restore_contract,
-            ipc_contract::get_contract_by_id,
             //----device_config----
             ipc_device_config::get_device_config,
             ipc_device_config::get_default_receipt_templates,
@@ -234,23 +199,8 @@ pub async fn run() {
             ipc_discount::delete_discount,
             ipc_discount::delete_discount_permanent,
             ipc_discount::restore_discount,
-            //----dispenser_port---
-            ipc_dispenser_port::save_dispenser_port,
-            ipc_dispenser_port::get_dispenser_ports,
-            ipc_dispenser_port::delete_dispenser_port,
-            //----dispenser---
-            ipc_dispenser::save_dispenser,
-            ipc_dispenser::get_dispensers,
-            ipc_dispenser::get_all_dispensers,
-            ipc_dispenser::delete_dispenser,
-            ipc_dispenser::delete_dispenser_permanent,
-            ipc_dispenser::restore_dispenser,
-            ipc_dispenser::save_nozzle,
-            ipc_dispenser::delete_nozzle,
-            ipc_dispenser::delete_nozzle_permanent,
-            ipc_dispenser::restore_nozzle,
-            ipc_dispenser::get_nozzles,
-            ipc_dispenser::get_all_nozzles,
+            //----dispenser_port--- REMOVED
+            //----dispenser--- REMOVED
             //----group---
             ipc_group::save_group,
             ipc_group::get_groups,
@@ -274,8 +224,6 @@ pub async fn run() {
             ipc_mark::restore_mark,
             //----order_item----
             ipc_order_item::get_order_items,
-            ipc_order_item::get_fueling_order_items,
-            ipc_order_item::get_summary_totals_by_nozzle,
             //----order----
             ipc_order::get_active_orders,
             ipc_order::close_active_order,
@@ -287,9 +235,7 @@ pub async fn run() {
             ipc_order::add_sale_order,
             ipc_order::add_return_order,
             ipc_order::add_outcome_order,
-            ipc_order::close_fueling,
             ipc_order::remove_order_item,
-            ipc_order::get_history_orders,
             ipc_order::get_movement_report,
             //----payment----
             ipc_payment::ipc_add_payment_to_order,
@@ -343,13 +289,7 @@ pub async fn run() {
             // ipc_station::save_station,
             // ipc_station::get_stations,
             // ipc_station::delete_station,
-            //----tank----
-            ipc_tank::save_tank,
-            ipc_tank::get_tanks,
-            ipc_tank::get_all_tanks,
-            ipc_tank::delete_tank,
-            ipc_tank::delete_tank_permanent,
-            ipc_tank::restore_tank,
+            //----tank---- REMOVED
             //----unit----
             ipc_unit::save_unit,
             ipc_unit::get_units,
@@ -374,38 +314,6 @@ pub async fn run() {
             ipc_user::restore_user,
             // ipc_user::save_roles,
             ipc_user::logout,
-            //----dispenser control IPC----
-            // ipc_control_dispenser::set_dispenser_nozzle,
-            // ipc_dispenser_control::close_dispenser_order,
-            // ipc_dispenser_control::get_status,
-            ipc_dispenser_control::start_fueling,
-            ipc_dispenser_control::write_price,
-            ipc_dispenser_control::read_price,
-            ipc_dispenser_control::write_solenoid,
-            ipc_dispenser_control::read_solenoid,
-            ipc_dispenser_control::preset_amount,
-            ipc_dispenser_control::preset_volume,
-            ipc_dispenser_control::read_fueling,
-            ipc_dispenser_control::read_total,
-            ipc_dispenser_control::read_shift_total,
-            ipc_dispenser_control::stop_fueling,
-            ipc_dispenser_control::ask_control,
-            ipc_dispenser_control::return_control,
-            ipc_dispenser_control::clear_shift_total,
-            ipc_dispenser_control::pause_fueling,
-            ipc_dispenser_control::resume_fueling,
-            ipc_dispenser_control::select_next_nozzle,
-            ipc_dispenser_control::read_preset,
-            ipc_dispenser_control::read_card_id,
-            ipc_dispenser_control::read_error_code,
-            ipc_dispenser_control::read_id,
-            ipc_dispenser_control::reset_kb_preset_flag,
-            ipc_dispenser_control::reset_error_flag,
-            ipc_dispenser_control::read_pressure,
-            ipc_dispenser_control::read_flow,
-            ipc_dispenser_control::read_dencity,
-            ipc_dispenser_control::write_dencity,
-            ipc_dispenser_control::clear_error,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -452,24 +360,6 @@ async fn setup_database_and_app(database_url: String, app_handle: tauri::AppHand
     }
 
     let data_store = Arc::new(DataStore::new(db));
-    let dispensers = match DispenserRepository::get(data_store.clone()).await {
-        Ok(dispensers) => dispensers,
-        Err(e) => {
-            error!("Can't get dispensers: {}", e);
-            return;
-        }
-    };
-
-    let (drcv, dispatcher) = DispenserPortManager::new(&dispensers).await;
-
-    let dispatcher = Arc::new(Mutex::new(dispatcher));
-
-    let dispensers = Arc::new(
-        dispensers
-            .into_iter()
-            .map(|d| (d.id.clone().unwrap(), d))
-            .collect::<DashMap<String, DispenserEntity>>(),
-    );
 
     let active_orders = match OrderRepository::fetch_active_orders(data_store.clone()).await {
         Ok(orders) => orders,
@@ -487,67 +377,17 @@ async fn setup_database_and_app(database_url: String, app_handle: tauri::AppHand
         }
     };
 
-    let address_to_dispenser_map: HashMap<u8, String> = dispensers
-        .iter()
-        .flat_map(|entry| {
-            let id = entry.key().clone();
-            let dis = entry.value();
-            dis.nozzles
-                .iter()
-                .map(move |nozzle| (nozzle.address, id.clone()))
-                .collect::<Vec<_>>()
-        })
-        .collect();
-
-    // Debug: Log the address mappings at startup
-    println!("🗺️ Address to Dispenser mappings at startup:");
-    for (addr, disp_id) in &address_to_dispenser_map {
-        println!("   Address {} → Dispenser {}", addr, disp_id);
-    }
-
-    let address_to_dispenser = Arc::new(Mutex::new(address_to_dispenser_map));
-    let nozzle_id_to_dispenser = Arc::new(Mutex::new(
-        dispensers
-            .iter()
-            .flat_map(|entry| {
-                let id = entry.key().clone();
-                let dis = entry.value();
-                dis.nozzles
-                    .iter()
-                    .map(move |nozzle| (nozzle.id.clone().unwrap(), id.clone()))
-                    .collect::<Vec<_>>()
-            })
-            .collect::<HashMap<String, String>>(),
-    ));
-
     let user: Arc<Mutex<Option<UserEntity>>> = Arc::new(Mutex::new(None));
     let active_orders = Arc::new(Mutex::new(active_orders));
     let active_shift = Arc::new(Mutex::new(active_shift));
 
     // Store all states in the app
     app_handle.manage(data_store);
-    app_handle.manage(dispensers);
-    app_handle.manage(dispatcher);
-    app_handle.manage(address_to_dispenser);
-    app_handle.manage(nozzle_id_to_dispenser);
     app_handle.manage(user);
     app_handle.manage(active_orders);
     app_handle.manage(active_shift);
 
-    // Start the serial receiver
+    // Create app context
     let ctx = Arc::new(Ctx::new(app_handle.clone()));
-
-    // Add Ctx to managed state so it can be accessed by commands
-    app_handle.manage(ctx.clone());
-
-    // Start the communication watchdog
-    let watchdog_ctx = ctx.clone();
-    tauri::async_runtime::spawn(async move {
-        Ctx::start_communication_watchdog(watchdog_ctx).await;
-    });
-
-    // Start the serial receiver
-    tauri::async_runtime::spawn(async move {
-        dispesner_serial_receiver(ctx, drcv).await;
-    });
+    app_handle.manage(ctx);
 }

@@ -30,8 +30,6 @@ impl From<Model> for DeviceConfigEntity {
             label_template: model.label_template,
             qr_code_url: model.qr_code_url,
             logo_path: model.logo_path,
-            license_key: model.license_key,
-            license_expiry: model.license_expiry,
             last_sync_at: model.last_sync_at,
             is_registered: model.is_registered,
         }
@@ -94,8 +92,6 @@ impl DeviceConfigRepository {
             label_template: Set(entity.label_template.clone()),
             qr_code_url: Set(entity.qr_code_url.clone()),
             logo_path: Set(entity.logo_path.clone()),
-            license_key: Set(entity.license_key.clone()),
-            license_expiry: Set(entity.license_expiry.clone()),
             last_sync_at: Set(entity.last_sync_at.clone()),
             is_registered: Set(entity.is_registered),
             created_at: Set(created_at),

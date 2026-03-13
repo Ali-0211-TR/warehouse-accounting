@@ -28,14 +28,6 @@ pub struct Model {
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-        belongs_to = "super::cards::Entity",
-        from = "Column::CardId",
-        to = "super::cards::Column::Id",
-        on_update = "NoAction",
-        on_delete = "Cascade"
-    )]
-    Cards,
-    #[sea_orm(
         belongs_to = "super::device_config::Entity",
         from = "Column::DeviceId",
         to = "super::device_config::Column::DeviceId",
@@ -59,12 +51,6 @@ pub enum Relation {
         on_delete = "SetNull"
     )]
     Products,
-}
-
-impl Related<super::cards::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Cards.def()
-    }
 }
 
 impl Related<super::device_config::Entity> for Entity {

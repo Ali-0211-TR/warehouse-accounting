@@ -54,7 +54,7 @@ pub async fn get_client_by_id(
     crate::ipc_handler_async!({
         let ctx = Ctx::from_app(app)?;
         ctx.is_logged_in()?;
-        get_client_by_id_usecase(&ctx, params.id, params.include_nested).await
+        get_client_by_id_usecase(&ctx, params.id).await
     })
 }
 

@@ -191,7 +191,7 @@ async fn print_receipt_impl(params: PrintReceiptDTO) -> Result<PrintResult> {
 
     // Create a temporary directory for the print file
     let temp_dir = std::env::temp_dir();
-    let print_file_path = temp_dir.join("texnouz_receipt.html");
+    let print_file_path = temp_dir.join("sklad_uchot_receipt.html");
 
     // Write the HTML content to the temporary file
     fs::write(&print_file_path, &params.html_content)
@@ -202,7 +202,7 @@ async fn print_receipt_impl(params: PrintReceiptDTO) -> Result<PrintResult> {
     {
         // Convert HTML to plain text manually for thermal printer
         // This gives us better control over spacing and formatting
-        let txt_file_path = temp_dir.join("texnouz_receipt.txt");
+        let txt_file_path = temp_dir.join("sklad_uchot_receipt.txt");
 
         // Read the HTML content and strip tags to create compact text
         let html_content = fs::read_to_string(&print_file_path)
@@ -272,7 +272,7 @@ async fn print_receipt_impl(params: PrintReceiptDTO) -> Result<PrintResult> {
     #[cfg(target_os = "windows")]
     {
         // On Windows, convert HTML to text for thermal printer
-        let txt_file_path = temp_dir.join("texnouz_receipt.txt");
+        let txt_file_path = temp_dir.join("sklad_uchot_receipt.txt");
 
         // Read the HTML content and strip tags
         let html_content = fs::read_to_string(&print_file_path)
@@ -1159,7 +1159,7 @@ async fn print_receipt_by_order_impl(
 
     // Write to temporary file
     let temp_dir = std::env::temp_dir();
-    let receipt_file_path = temp_dir.join("texnouz_receipt_template.txt");
+    let receipt_file_path = temp_dir.join("sklad_uchot_receipt_template.txt");
 
     fs::write(&receipt_file_path, &receipt)
         .map_err(|e| Error::General(format!("Failed to write receipt file: {}", e)))?;
@@ -1674,7 +1674,7 @@ async fn print_to_named_printer_impl(
         .replace("{{qr_code_url}}", &device_config.qr_code_url.unwrap_or_else(|| "".to_string()));
 
     let temp_dir = std::env::temp_dir();
-    let receipt_file_path = temp_dir.join("texnouz_receipt_named.txt");
+    let receipt_file_path = temp_dir.join("sklad_uchot_receipt_named.txt");
     fs::write(&receipt_file_path, &receipt)
         .map_err(|e| Error::General(format!("Failed to write receipt file: {}", e)))?;
 
@@ -3168,7 +3168,7 @@ async fn print_pdf_receipt_impl(
 
     // 9. Save PDF with fixed name
     let temp_dir = std::env::temp_dir();
-    let pdf_path = temp_dir.join("texnouz_receipt.pdf");
+    let pdf_path = temp_dir.join("sklad_uchot_receipt.pdf");
 
     println!("📄 Saving PDF to: {}", pdf_path.display());
 

@@ -183,22 +183,13 @@ export const useOrderStore = create<OrderStore>()((set, get) => ({
         const existing = state.activeOrders[existingIndex];
 
         // Skip update if order data hasn't changed (shallow check on key fields)
-        // Also compare fueling order data (volume/amount) which changes during active fueling
-        const existingFuelingItem = existing.items?.find((item: any) => item.id === existing.fueling_order_item_id);
-        const newFuelingItem = order.items?.find((item: any) => item.id === order.fueling_order_item_id);
-        const existingFueling = existingFuelingItem?.fueling_order;
-        const newFueling = newFuelingItem?.fueling_order;
-
         if (
           existing.summ === order.summ &&
           existing.tax === order.tax &&
           existing.d_move === order.d_move &&
           existing.discard === order.discard &&
           existing.client?.id === order.client?.id &&
-          existing.items?.length === order.items?.length &&
-          existingFueling?.volume === newFueling?.volume &&
-          existingFueling?.amount === newFueling?.amount &&
-          existingFueling?.d_move === newFueling?.d_move
+          existing.items?.length === order.items?.length
         ) {
           return state;
         }

@@ -22,9 +22,8 @@ pub async fn get_all_clients_usecase(ctx: &Ctx) -> Result<Vec<ClientEntity>> {
 pub async fn get_client_by_id_usecase(
     ctx: &Ctx,
     id: String,
-    include_cards: bool,
 ) -> Result<ClientEntity> {
-    let data = ClientRepository::get_by_id(ctx.get_db(), id, include_cards).await?;
+    let data = ClientRepository::get_by_id(ctx.get_db(), id).await?;
     Ok(data)
 }
 

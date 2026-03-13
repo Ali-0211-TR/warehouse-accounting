@@ -2,7 +2,6 @@ import { ClientType } from "../bindings/ClientType";
 import { DiscountBoundType } from "../bindings/DiscountBoundType";
 import { DiscountType } from "../bindings/DiscountType";
 import { DiscountUnitType } from "../bindings/DiscountUnitType";
-import { DispenserState } from "../bindings/DispenserState";
 import { OrderType } from "../bindings/OrderType";
 import { ProductType } from "../bindings/ProductType";
 import { RoleType } from "../bindings/RoleType";
@@ -49,13 +48,7 @@ export const allDiscountUnitTypes: DiscountUnitType[] = [
 
 export const allDiscountBoundTypes: DiscountBoundType[] = ["Money", "Volume"];
 
-export const allDiscountTypes: DiscountType[] = ["Price", "Card"];
-
-export const allDispenserStates: DispenserState[] = [
-  "Active",
-  "Blocked",
-  "Inactive",
-];
+export const allDiscountTypes: DiscountType[] = ["Price", "Percentage"];
 
 export interface PaginationInfo {
   page: number;

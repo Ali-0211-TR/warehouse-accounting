@@ -17,54 +17,6 @@ use std::str::FromStr;
 use std::sync::Arc;
 
 impl OrderFetching for OrderRepository {
-    async fn get_history(
-        db: Arc<DataStore>,
-        dispenser_id: String,
-        limit: u64,
-    ) -> Result<Vec<OrderEntity>> {
-        let db_conn = db.get_db()?;
-
-        // ВАЖНО:
-        // Из-за join'ов ниже один и тот же order может прийти несколько раз
-        // (по числу order_items / fueling_order записей).
-        // Поэтому добавляем DISTINCT.
-        let query = ord::Entity::find()
-            .distinct()
-            .join(JoinType::InnerJoin, ord::Relation::OrderItems.def())
-            .join(
-                JoinType::InnerJoin,
-                entity::order_items::Entity::belongs_to(entity::fueling_order::Entity)
-                    .from(entity::order_items::Column::Id)
-                    .to(entity::fueling_order::Column::OrderItemId)
-                    .into(),
-            )
-            .join(
-                JoinType::InnerJoin,
-                entity::fueling_order::Entity::belongs_to(entity::nozzles::Entity)
-                    .from(entity::fueling_order::Column::NozzleId)
-                    .to(entity::nozzles::Column::Id)
-                    .into(),
-            )
-            .filter(ord::Column::OrderType.eq("SaleDispenser"))
-            .filter(entity::fueling_order::Column::DMove.is_not_null())
-            .filter(entity::nozzles::Column::DispenserId.eq(dispenser_id))
-            .order_by_desc(ord::Column::DCreated)
-            .limit(limit);
-
-        let orders_list = query.all(db_conn).await?;
-
-        // Доп. защита от дублей (на случай особенностей DISTINCT в твоей БД/схеме)
-        let mut seen: HashSet<String> = HashSet::new();
-        let orders_list: Vec<_> = orders_list
-            .into_iter()
-            .filter(|m| seen.insert(m.id.clone()))
-            .collect();
-
-        // Параллельно собираем OrderEntity (ускоряет, даже если остаётся N+1)
-        let orders = build_orders_with_items(db, orders_list, 8).await?;
-        Ok(orders)
-    }
-
     async fn get(
         db: Arc<DataStore>,
         filter: LazyTableStateDTO<OrderFilter, OrderColumn>,
@@ -196,15 +148,14 @@ impl OrderFetching for OrderRepository {
             };
 
         // ========================================
-        // 1. Totals для НЕ-SaleDispenser заказов
+        // 1. Totals grouped by order type
         // ========================================
-        let non_dispenser_query = order_items::Entity::find()
-            .join(JoinType::InnerJoin, order_items::Relation::Orders.def())
-            .filter(ord::Column::OrderType.ne("SaleDispenser"));
+        let totals_query = order_items::Entity::find()
+            .join(JoinType::InnerJoin, order_items::Relation::Orders.def());
 
-        let non_dispenser_query = apply_totals_filters(non_dispenser_query);
+        let totals_query = apply_totals_filters(totals_query);
 
-        let non_dispenser_totals = non_dispenser_query
+        let order_type_totals_raw = totals_query
             .select_only()
             .column(ord::Column::OrderType)
             .column_as(order_items::Column::Cost.sum(), "total_sum")
@@ -241,55 +192,6 @@ impl OrderFetching for OrderRepository {
             .all(db_conn)
             .await?;
 
-        // ========================================
-        // 2. Totals для SaleDispenser заказов - ТОПЛИВО
-        //    (order_items с fueling_order записью)
-        // ========================================
-        let dispenser_fuel_query = order_items::Entity::find()
-            .join(JoinType::InnerJoin, order_items::Relation::Orders.def())
-            .join(
-                JoinType::InnerJoin,
-                order_items::Relation::FuelingOrder.def(),
-            )
-            .filter(ord::Column::OrderType.eq("SaleDispenser"));
-
-        let dispenser_fuel_query = apply_totals_filters(dispenser_fuel_query);
-
-        let dispenser_fuel_totals = dispenser_fuel_query
-            .select_only()
-            .column_as(order_items::Column::Cost.sum(), "total_sum")
-            .column_as(order_items::Column::Tax.sum(), "total_tax")
-            .column_as(order_items::Column::Discount.sum(), "total_discount")
-            .into_tuple::<(Option<Decimal>, Option<Decimal>, Option<Decimal>)>()
-            .one(db_conn)
-            .await?
-            .unwrap_or((None, None, None));
-
-        // ========================================
-        // 3. Totals для SaleDispenser заказов - ТОВАРЫ
-        //    (order_items БЕЗ fueling_order записи)
-        // ========================================
-        let dispenser_goods_query = order_items::Entity::find()
-            .join(JoinType::InnerJoin, order_items::Relation::Orders.def())
-            .join(
-                JoinType::LeftJoin,
-                order_items::Relation::FuelingOrder.def(),
-            )
-            .filter(ord::Column::OrderType.eq("SaleDispenser"))
-            .filter(entity::fueling_order::Column::Id.is_null());
-
-        let dispenser_goods_query = apply_totals_filters(dispenser_goods_query);
-
-        let dispenser_goods_totals = dispenser_goods_query
-            .select_only()
-            .column_as(order_items::Column::Cost.sum(), "total_sum")
-            .column_as(order_items::Column::Tax.sum(), "total_tax")
-            .column_as(order_items::Column::Discount.sum(), "total_discount")
-            .into_tuple::<(Option<Decimal>, Option<Decimal>, Option<Decimal>)>()
-            .one(db_conn)
-            .await?
-            .unwrap_or((None, None, None));
-
         // Initialize totals
         let mut order_type_totals = OrderTypeTotals {
             income_sum: Decimal::ZERO,
@@ -301,9 +203,6 @@ impl OrderFetching for OrderRepository {
             sale_sum: Decimal::ZERO,
             sale_tax: Decimal::ZERO,
             sale_discount: Decimal::ZERO,
-            sale_dispenser_sum: Decimal::ZERO,
-            sale_dispenser_tax: Decimal::ZERO,
-            sale_dispenser_discount: Decimal::ZERO,
             returns_sum: Decimal::ZERO,
             returns_tax: Decimal::ZERO,
             returns_discount: Decimal::ZERO,
@@ -322,8 +221,8 @@ impl OrderFetching for OrderRepository {
             outcome_goods_discount: Decimal::ZERO,
         };
 
-        // Заполняем из НЕ-SaleDispenser заказов
-        for (order_type_str, sum_opt, tax_opt, discount_opt) in non_dispenser_totals {
+        // Fill totals from grouped query
+        for (order_type_str, sum_opt, tax_opt, discount_opt) in order_type_totals_raw {
             let sum = sum_opt.unwrap_or_default();
             let tax = tax_opt.unwrap_or_default();
             let discount = discount_opt.unwrap_or_default();
@@ -340,24 +239,21 @@ impl OrderFetching for OrderRepository {
                         order_type_totals.outcome_tax = tax;
                         order_type_totals.outcome_discount = discount;
                     }
-                    OrderType::Sale => {
-                        order_type_totals.sale_sum = sum;
-                        order_type_totals.sale_tax = tax;
-                        order_type_totals.sale_discount = discount;
+                    OrderType::Sale | OrderType::SaleDispenser => {
+                        order_type_totals.sale_sum += sum;
+                        order_type_totals.sale_tax += tax;
+                        order_type_totals.sale_discount += discount;
                     }
                     OrderType::Returns => {
                         order_type_totals.returns_sum = sum;
                         order_type_totals.returns_tax = tax;
                         order_type_totals.returns_discount = discount;
                     }
-                    OrderType::SaleDispenser => {
-                        // Этот случай не должен возникнуть, т.к. мы фильтруем
-                    }
                 }
             }
         }
 
-        // Заполняем разбивку Income/Outcome по категориям товаров
+        // Fill Income/Outcome by product category breakdown
         for (order_type_str, product_type_str, sum_opt, tax_opt, discount_opt) in income_outcome_by_category {
             let sum = sum_opt.unwrap_or_default();
             let tax = tax_opt.unwrap_or_default();
@@ -392,21 +288,9 @@ impl OrderFetching for OrderRepository {
             }
         }
 
-        // Заполняем SaleDispenser - топливо
-        order_type_totals.sale_dispenser_sum = dispenser_fuel_totals.0.unwrap_or_default();
-        order_type_totals.sale_dispenser_tax = dispenser_fuel_totals.1.unwrap_or_default();
-        order_type_totals.sale_dispenser_discount = dispenser_fuel_totals.2.unwrap_or_default();
-
-        // Товары из SaleDispenser добавляем к обычным продажам (Sale)
-        order_type_totals.sale_sum += dispenser_goods_totals.0.unwrap_or_default();
-        order_type_totals.sale_tax += dispenser_goods_totals.1.unwrap_or_default();
-        order_type_totals.sale_discount += dispenser_goods_totals.2.unwrap_or_default();
-
-        // Money coming IN (positive cash flow): Sales + Fuel Sales + Returns to Provider
+        // Money coming IN (positive cash flow): Sales + Returns to Provider
         let total_incoming = order_type_totals.sale_sum
             + order_type_totals.sale_tax
-            + order_type_totals.sale_dispenser_sum
-            + order_type_totals.sale_dispenser_tax
             + order_type_totals.outcome_sum
             + order_type_totals.outcome_tax;
 
@@ -422,13 +306,11 @@ impl OrderFetching for OrderRepository {
         let total_tax = -order_type_totals.income_tax
             + order_type_totals.outcome_tax
             + order_type_totals.sale_tax
-            + order_type_totals.sale_dispenser_tax
             - order_type_totals.returns_tax;
 
         let total_discount = -order_type_totals.income_discount
             + order_type_totals.outcome_discount
             + order_type_totals.sale_discount
-            + order_type_totals.sale_dispenser_discount
             - order_type_totals.returns_discount;
 
         let meta = OrderMovementSummaryMeta {
@@ -455,7 +337,7 @@ impl OrderFetching for OrderRepository {
         let order = ord::Entity::find_by_id(order_id)
             .one(db_conn)
             .await?
-            .ok_or(Error::Dispenser("order_not_found".to_owned()))?;
+            .ok_or(Error::General("order_not_found".to_owned()))?;
 
         let items = OrderItemRepository::get_order_items(db.clone(), order.id.clone()).await?;
         super::shared::into_entity(db, order, items).await

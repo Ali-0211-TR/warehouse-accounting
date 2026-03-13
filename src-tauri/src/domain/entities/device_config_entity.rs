@@ -30,8 +30,6 @@ pub struct DeviceConfigEntity {
     pub label_template: Option<String>, // Editable template for label printer
     pub qr_code_url: Option<String>,    // URL/data to encode in QR code
     pub logo_path: Option<String>,      // Path to logo image file for thermal printer
-    pub license_key: Option<String>,
-    pub license_expiry: Option<String>,
     pub last_sync_at: Option<String>,
     pub is_registered: bool,
 }
@@ -63,8 +61,6 @@ impl Default for DeviceConfigEntity {
             label_template: Some(include_str!("../../../assets/templates/label.txt").to_string()),
             qr_code_url: None,
             logo_path: None,
-            license_key: None,
-            license_expiry: None,
             last_sync_at: None,
             is_registered: false,
         }

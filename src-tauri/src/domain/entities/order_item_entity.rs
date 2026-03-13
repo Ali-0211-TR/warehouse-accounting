@@ -1,5 +1,4 @@
 use super::{
-    contract_product_entity::ContractProductEntity, fueling_order_entity::FuelingOrderEntity,
     order_item_discount_entity::OrderItemDiscountEntity, order_item_tax_entity::OrderItemTaxEntity,
     product_entity::ProductEntity,
 };
@@ -31,8 +30,6 @@ pub struct OrderItemEntity {
     pub id: Option<String>,
     pub order_id: String,
     pub product: Option<ProductEntity>,
-    pub contract_product: Option<ContractProductEntity>,
-    pub fueling_order: Option<FuelingOrderEntity>,
     #[cfg_attr(
         not(any(target_os = "android", target_os = "ios")),
         ts(type = "number")
@@ -145,13 +142,11 @@ pub struct OrderItemFilter {
     )]
     pub max_discount: Option<Decimal>,
     pub product_name: Option<String>,
-    pub has_fueling_order: Option<bool>,
 }
 
 impl OrderItemEntity {
     pub fn from_product(
         product: ProductEntity,
-        fueling_order: Option<FuelingOrderEntity>,
         count: Decimal,
         order_id: String,
         order_type: OrderType, // Add order_type parameter
@@ -177,8 +172,6 @@ impl OrderItemEntity {
             id: None,
             order_id,
             product: Some(product),
-            contract_product: None,
-            fueling_order,
             count,
             price,
             discount: total_discount,

@@ -52,8 +52,6 @@ impl ClientDTO {
             updated_at: String::new(),
             deleted_at: None,
             version: 0,
-            // Relations will be populated by repository
-            cards: None,
         }
     }
 }

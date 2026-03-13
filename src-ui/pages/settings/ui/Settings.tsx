@@ -964,7 +964,7 @@ export function SettingsPage() {
                               }
                               placeholder={t(
                                 "settings.company_name_placeholder",
-                                "TexnoUz"
+                                "Sklad Uchot"
                               )}
                               disabled={isLoading}
                             />

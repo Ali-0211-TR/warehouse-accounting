@@ -15,20 +15,12 @@ where
     serializer.serialize_f64(f64_value)
 }
 
-mod camera_dto;
 mod client_dto;
-mod contract_car_dto;
-mod contract_dto;
-mod contract_product_dto;
 mod discount_dto;
-mod dispenser_control_dto;
-mod dispenser_dto;
-mod dispenser_port_dto;
 mod group_dto;
 mod include_dto;
 mod limit_dto;
 mod mark_dto;
-mod nozzle_dto;
 mod order_dto;
 mod order_item_dto;
 pub mod payment_dto;
@@ -38,25 +30,16 @@ mod product_movement_dto;
 mod shift_dto;
 // mod shop_dto; // DEPRECATED: Using device_config instead
 // mod station_dto; // DEPRECATED: Using device_config instead
-mod tank_dto;
 mod tax_dto;
 mod unit_dto;
 mod user_dto;
 
-pub use camera_dto::*;
 pub use client_dto::*;
-pub use contract_car_dto::*;
-pub use contract_dto::*;
-pub use contract_product_dto::*;
 pub use discount_dto::*;
-pub use dispenser_control_dto::*;
-pub use dispenser_dto::*;
-pub use dispenser_port_dto::*;
 pub use group_dto::*;
 pub use include_dto::*;
 pub use limit_dto::*;
 pub use mark_dto::*;
-pub use nozzle_dto::*;
 pub use order_dto::*;
 pub use payment_dto::*;
 pub use price_dto::*;
@@ -65,43 +48,11 @@ pub use product_movement_dto::*;
 pub use shift_dto::*;
 // pub use shop_dto::*; // DEPRECATED: Using device_config instead
 // pub use station_dto::*; // DEPRECATED: Using device_config instead
-pub use tank_dto::*;
 pub use tax_dto::*;
 pub use unit_dto::*;
 pub use user_dto::*;
 
 use crate::shared::types::SortOrder;
-
-#[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
-#[derive(Debug, Deserialize, Clone)]
-#[cfg_attr(
-    not(any(target_os = "android", target_os = "ios")),
-    ts(export, export_to = "../../src-ui/shared/bindings/dtos/")
-)]
-pub struct DispenserHistoryParams {
-    pub dispenser_id: String,
-    pub limit: Option<u64>,
-}
-
-// #[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
-// #[derive(Deserialize)]
-// #[cfg_attr(not(any(target_os = "android", target_os = "ios")), ts(export, export_to = "../../src-ui/shared/bindings/dtos/"))]
-// pub struct CreateDTO<D> {
-//     pub data: D,
-// }
-
-// #[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
-// #[derive(Deserialize)]
-// #[cfg_attr(not(any(target_os = "android", target_os = "ios")), ts(export, export_to = "../../src-ui/shared/bindings/dtos/"))]
-// pub struct UpdateDTO<D> {
-//     pub id: String,
-//     pub data: D,
-// }
-
-// #[derive(Deserialize)]
-// pub struct ListDTO<F> {
-//     pub filter: Option<F>,
-// }
 
 #[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
 #[derive(Debug, Deserialize, Clone)]
@@ -116,60 +67,6 @@ pub struct IdDTO {
 #[derive(Debug, Deserialize, Clone)]
 pub struct OptionIdDTO {
     pub id: Option<String>,
-}
-
-#[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
-#[derive(Debug, Deserialize, Clone)]
-#[cfg_attr(
-    not(any(target_os = "android", target_os = "ios")),
-    ts(export, export_to = "../../src-ui/shared/bindings/dtos/")
-)]
-pub struct AddressDTO {
-    pub address: u8,
-}
-
-#[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
-#[derive(Debug, Deserialize, Clone)]
-#[cfg_attr(
-    not(any(target_os = "android", target_os = "ios")),
-    ts(export, export_to = "../../src-ui/shared/bindings/dtos/")
-)]
-pub struct SetPriceDTO {
-    pub address: u8,
-    pub price: u32, // Price in cents
-}
-#[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
-#[derive(Debug, Deserialize, Clone)]
-#[cfg_attr(
-    not(any(target_os = "android", target_os = "ios")),
-    ts(export, export_to = "../../src-ui/shared/bindings/dtos/")
-)]
-pub struct SetDencityDTO {
-    pub address: u8,
-    pub dencity: u16, // Price in cents
-}
-
-#[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
-#[derive(Debug, Deserialize, Clone)]
-#[cfg_attr(
-    not(any(target_os = "android", target_os = "ios")),
-    ts(export, export_to = "../../src-ui/shared/bindings/dtos/")
-)]
-pub struct PresetDTO {
-    pub address: u8,
-    pub price: u32, // Price in cents
-    pub value: u32, // Value in cents
-}
-
-#[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
-#[derive(Debug, Deserialize, Clone)]
-#[cfg_attr(
-    not(any(target_os = "android", target_os = "ios")),
-    ts(export, export_to = "../../src-ui/shared/bindings/dtos/")
-)]
-pub struct SetSolenoidDTO {
-    pub address: u8,
-    pub value: u8, // Price in cents
 }
 
 #[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
@@ -216,45 +113,6 @@ pub struct MetaPaginatorDTO<T, M> {
     pub page_count: u32,
     pub items: Vec<T>,
     pub meta: M,
-}
-#[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
-#[derive(Debug, Deserialize, Serialize, Clone)]
-#[serde(rename_all = "camelCase")]
-#[cfg_attr(
-    not(any(target_os = "android", target_os = "ios")),
-    ts(export, export_to = "../../src-ui/shared/bindings/dtos/")
-)]
-pub struct FuelingSumaryMeta {
-    #[cfg_attr(
-        not(any(target_os = "android", target_os = "ios")),
-        ts(type = "number")
-    )]
-    pub total_volume: rust_decimal::Decimal,
-    #[cfg_attr(
-        not(any(target_os = "android", target_os = "ios")),
-        ts(type = "number")
-    )]
-    pub total_amount: rust_decimal::Decimal,
-}
-
-#[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
-#[derive(Debug, Deserialize, Serialize, Clone)]
-#[serde(rename_all = "camelCase")]
-#[cfg_attr(
-    not(any(target_os = "android", target_os = "ios")),
-    ts(export, export_to = "../../src-ui/shared/bindings/dtos/")
-)]
-pub struct OrderItemMovementSummaryMeta {
-    #[cfg_attr(
-        not(any(target_os = "android", target_os = "ios")),
-        ts(type = "number")
-    )]
-    pub total_volume: rust_decimal::Decimal,
-    #[cfg_attr(
-        not(any(target_os = "android", target_os = "ios")),
-        ts(type = "number")
-    )]
-    pub total_amount: rust_decimal::Decimal,
 }
 
 #[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
@@ -319,24 +177,6 @@ pub struct OrderTypeTotals {
     )]
     #[serde(serialize_with = "serialize_decimal_as_f64")]
     pub sale_discount: rust_decimal::Decimal,
-    #[cfg_attr(
-        not(any(target_os = "android", target_os = "ios")),
-        ts(type = "number")
-    )]
-    #[serde(serialize_with = "serialize_decimal_as_f64")]
-    pub sale_dispenser_sum: rust_decimal::Decimal,
-    #[cfg_attr(
-        not(any(target_os = "android", target_os = "ios")),
-        ts(type = "number")
-    )]
-    #[serde(serialize_with = "serialize_decimal_as_f64")]
-    pub sale_dispenser_tax: rust_decimal::Decimal,
-    #[cfg_attr(
-        not(any(target_os = "android", target_os = "ios")),
-        ts(type = "number")
-    )]
-    #[serde(serialize_with = "serialize_decimal_as_f64")]
-    pub sale_dispenser_discount: rust_decimal::Decimal,
     #[cfg_attr(
         not(any(target_os = "android", target_os = "ios")),
         ts(type = "number")
@@ -474,4 +314,24 @@ pub struct OrderMovementSummaryMeta {
     #[serde(serialize_with = "serialize_decimal_as_f64")]
     pub total_outgoing: rust_decimal::Decimal,
     pub totals_by_type: OrderTypeTotals,
+}
+
+#[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+#[cfg_attr(
+    not(any(target_os = "android", target_os = "ios")),
+    ts(export, export_to = "../../src-ui/shared/bindings/dtos/")
+)]
+pub struct OrderItemMovementSummaryMeta {
+    #[cfg_attr(
+        not(any(target_os = "android", target_os = "ios")),
+        ts(type = "number")
+    )]
+    pub total_volume: rust_decimal::Decimal,
+    #[cfg_attr(
+        not(any(target_os = "android", target_os = "ios")),
+        ts(type = "number")
+    )]
+    pub total_amount: rust_decimal::Decimal,
 }

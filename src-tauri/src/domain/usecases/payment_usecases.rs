@@ -21,7 +21,7 @@ pub async fn add_payment_to_order_usecase(
         .iter()
         .find(|p| p.summ == payment.summ && p.payment_type == payment.payment_type)
         .cloned()
-        .ok_or_else(|| crate::shared::error::Error::Dispenser("payment_not_created".into()))?;
+        .ok_or_else(|| crate::shared::error::Error::General("payment_not_created".into()))?;
 
     // Update active orders in context
     let mut active_orders = ctx.active_orders.lock().unwrap();

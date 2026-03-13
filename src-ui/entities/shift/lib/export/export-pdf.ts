@@ -126,40 +126,7 @@ export async function exportShiftToPDF(
       }
     );
 
-    // Данные ТРК для каждого резервуара
-    shift.data_close.forEach(tank => {
-      if (tank.dispensers_data && tank.dispensers_data.length > 0) {
-        content.push(
-          {
-            text: `${t("dispenser.data", "Данные ТРК")} - ${t("tank.number", "Резервуар")} ${tank.number} (${tank.gas})`,
-            style: 'subheader',
-            fontSize: 10,
-            margin: [0, 10, 0, 5]
-          },
-          {
-            table: {
-              headerRows: 1,
-              widths: ['*', 'auto', 'auto', 'auto'],
-              body: [
-                [
-                  { text: t("dispenser.name", "ТРК"), style: 'tableHeader' },
-                  { text: t("dispenser.nozzle", "Пистолет"), style: 'tableHeader' },
-                  { text: t("dispenser.shift_volume", "Объём за смену (л)"), style: 'tableHeader' },
-                  { text: t("dispenser.shift_amount", "Сумма за смену"), style: 'tableHeader' },
-                ],
-                ...tank.dispensers_data.map(d => [
-                  d.dispenser_name,
-                  d.nozzle_addres.toString(),
-                  d.shift_volume.toFixed(2),
-                  d.shift_amount.toFixed(2),
-                ])
-              ]
-            },
-            margin: [0, 0, 0, 15]
-          }
-        );
-      }
-    });
+    // Данные ТРК removed (dispensers no longer in backend)
   }
 
   // Изменение объёмов
@@ -173,7 +140,7 @@ export async function exportShiftToPDF(
       {
         table: {
           headerRows: 1,
-          widths: ['auto', '*', 'auto', 'auto', 'auto', 'auto'],
+          widths: ['auto', '*', 'auto', 'auto', 'auto'],
           body: [
             [
               { text: t("tank.number", "№"), style: 'tableHeader' },
@@ -181,14 +148,12 @@ export async function exportShiftToPDF(
               { text: t("shift.volume_start", "Объём начало (л)"), style: 'tableHeader' },
               { text: t("shift.volume_end", "Объём конец (л)"), style: 'tableHeader' },
               { text: t("shift.volume_diff", "Разница (л)"), style: 'tableHeader' },
-              { text: t("shift.dispensed", "Отпущено по ТРК (л)"), style: 'tableHeader' },
             ],
             ...shift.data_open.map(tankOpen => {
               const tankClose = shift.data_close?.find(t => t.number === tankOpen.number);
               if (!tankClose) return null;
 
               const diff = tankOpen.volume_current - tankClose.volume_current;
-              const totalDispensed = tankClose.dispensers_data?.reduce((sum, d) => sum + d.shift_volume, 0) || 0;
 
               return [
                 tankOpen.number.toString(),
@@ -196,7 +161,6 @@ export async function exportShiftToPDF(
                 tankOpen.volume_current.toFixed(2),
                 tankClose.volume_current.toFixed(2),
                 `${diff > 0 ? '+' : ''}${diff.toFixed(2)}`,
-                totalDispensed.toFixed(2),
               ];
             }).filter(Boolean)
           ]

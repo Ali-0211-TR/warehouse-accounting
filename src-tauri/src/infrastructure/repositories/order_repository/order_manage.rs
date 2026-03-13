@@ -16,15 +16,11 @@ impl OrderManaging for OrderRepository {
         order_type: OrderType,
         device_id: String,
     ) -> Result<OrderEntity> {
-        if order_type == OrderType::SaleDispenser {
-            return Err(Error::Dispenser("dispenser_order_not_supported".into()));
-        }
-
         let db_conn = db.get_db()?;
         let txn = db_conn.begin().await?;
 
         // Create order with proper device_id
-        let mut order_entity = OrderEntity::new_order(client, order_type, None);
+        let mut order_entity = OrderEntity::new_order(client, order_type);
         order_entity.device_id = device_id; // Set the actual device_id from context
         let order_model = Self::save_order_with_totals(&txn, order_entity).await?;
 
@@ -35,27 +31,6 @@ impl OrderManaging for OrderRepository {
     async fn close_order(db: Arc<DataStore>, id: String) -> Result<OrderEntity> {
         let db_conn = db.get_db()?;
         let txn = db_conn.begin().await?;
-
-        // Get the order to check for active fueling (fetch BEFORE we do any operations)
-        let order_initial = OrderRepository::get_by_id(db.clone(), id.clone()).await?;
-
-        // If order has active fueling, stop it first
-        if order_initial.has_active_fueling_item() {
-            let mut order_clone = order_initial.clone();
-            let order_item = order_clone
-                .get_fueling_item()
-                .ok_or(Error::Dispenser("order_item_not_found".into()))?;
-
-            *order_item = OrderItemRepository::stop_fueling(&txn, db.clone(), order_item).await?;
-
-            let product_id = order_item
-                .product
-                .as_ref()
-                .and_then(|p| p.id.clone())
-                .ok_or(Error::Dispenser("product_id_not_found".into()))?;
-
-            ProductRepository::calc_product_balance(&txn, product_id).await?;
-        }
 
         // Update order close time
         let mut active_order = Self::get_order_active_model(&txn, id.clone()).await?;
@@ -157,11 +132,11 @@ impl OrderManaging for OrderRepository {
             .filter(OrdItemColumn::Id.eq(order_item_id.clone()))
             .one(&txn)
             .await?
-            .ok_or(Error::Dispenser("order_item_not_found".into()))?;
+            .ok_or(Error::General("order_item_not_found".into()))?;
 
         // Verify that the order item belongs to the specified order
         if order_item.order_id != order_id {
-            return Err(Error::Dispenser("order_item_mismatch".into()));
+            return Err(Error::General("order_item_mismatch".into()));
         }
 
         let product_id = order_item.product_id;
@@ -186,74 +161,10 @@ impl OrderManaging for OrderRepository {
         OrderRepository::get_by_id(db, order_id).await
     }
 
-    async fn add_dispenser_order(
-        db: Arc<DataStore>,
-        nozzle: &NozzleEntity,
-        preset_type: PresetType,
-        preset: Decimal,
-        device_id: String,
-    ) -> Result<OrderEntity> {
-        let db_conn = db.get_db()?;
-        let txn = db_conn.begin().await?;
-
-        // Create base order with proper device_id
-        let mut order_entity = OrderEntity::new_order(None, OrderType::SaleDispenser, None);
-        order_entity.device_id = device_id; // Set the actual device_id from context
-        let order_model = Self::save_order_with_totals(&txn, order_entity).await?;
-
-        // Get product from nozzle
-        let product = Self::extract_product_from_nozzle(nozzle)?;
-
-        // Create order item with fueling order
-        let order_item = Self::create_dispenser_order_item(
-            &txn,
-            db.clone(),
-            &product,
-            order_model.id.clone(),
-            nozzle,
-            preset_type,
-            preset,
-        )
-        .await?;
-
-        txn.commit().await?;
-        super::shared::into_entity(db, order_model, vec![order_item]).await
-    }
-
-    async fn stop_fueling(db: Arc<DataStore>, mut order: OrderEntity) -> Result<OrderEntity> {
-        let order_id = order
-            .id
-            .clone()
-            .ok_or_else(|| Error::Dispenser("order_id_not_found".into()))?;
-
-        let db_conn = db.get_db()?;
-        let txn = db_conn.begin().await?;
-
-        // Stop fueling for the order item
-        let order_item = order
-            .get_fueling_item()
-            .ok_or(Error::Dispenser("order_item_not_found".into()))?;
-
-        *order_item = OrderItemRepository::stop_fueling(&txn, db.clone(), order_item).await?;
-        let product_id = order_item
-            .product
-            .as_ref()
-            .and_then(|p| p.id.clone())
-            .ok_or(Error::Dispenser("product_id_not_found".into()))?;
-        ProductRepository::calc_product_balance(&txn, product_id).await?;
-        // Update order totals
-        let mut active_order_model = order.clone().into();
-        super::shared::set_order_sum_and_tax(&txn, &mut active_order_model).await?;
-        active_order_model.save(&txn).await?;
-        txn.commit().await?;
-
-        OrderRepository::get_by_id(db, order_id).await
-    }
-
     async fn delete(db: Arc<DataStore>, order: OrderEntity) -> Result<u64> {
         let order_id = order
             .id
-            .ok_or(Error::Dispenser("order_id_not_found".into()))?;
+            .ok_or(Error::General("order_id_not_found".into()))?;
 
         let db_conn = db.get_db()?;
         let txn = db_conn.begin().await?;
@@ -289,13 +200,7 @@ impl OrderManaging for OrderRepository {
             .await?;
 
         if !order_item_ids.is_empty() {
-            // 3. Delete fueling_order records linked to order_items
-            entity::fueling_order::Entity::delete_many()
-                .filter(entity::fueling_order::Column::OrderItemId.is_in(order_item_ids.clone()))
-                .exec(&txn)
-                .await?;
-
-            // 4. Delete order_item_discounts linked to order_items
+            // 3. Delete order_item_discounts linked to order_items
             entity::order_item_discounts::Entity::delete_many()
                 .filter(
                     entity::order_item_discounts::Column::OrderItemId.is_in(order_item_ids.clone()),
@@ -303,29 +208,20 @@ impl OrderManaging for OrderRepository {
                 .exec(&txn)
                 .await?;
 
-            // 5. Delete order_item_taxes linked to order_items
+            // 4. Delete order_item_taxes linked to order_items
             entity::order_item_taxes::Entity::delete_many()
                 .filter(entity::order_item_taxes::Column::OrderItemId.is_in(order_item_ids.clone()))
                 .exec(&txn)
                 .await?;
-
-            // 6. Delete order_item_to_contract_product linked to order_items
-            entity::order_item_to_contract_product::Entity::delete_many()
-                .filter(
-                    entity::order_item_to_contract_product::Column::OrderItemId
-                        .is_in(order_item_ids),
-                )
-                .exec(&txn)
-                .await?;
         }
 
-        // 7. Delete order_items
+        // 6. Delete order_items
         OrderItem::Entity::delete_many()
             .filter(OrderItem::Column::OrderId.eq(order_id.clone()))
             .exec(&txn)
             .await?;
 
-        // 8. Delete the order itself
+        // 7. Delete the order itself
         let delete_result = ord::Entity::delete_many()
             .filter(ord::Column::Id.eq(order_id))
             .exec(&txn)
@@ -398,10 +294,10 @@ impl OrderManaging for OrderRepository {
             .filter(payments::Column::Id.eq(payment_id.clone()))
             .one(&txn)
             .await?
-            .ok_or(Error::Dispenser("payment_not_found".into()))?;
+            .ok_or(Error::General("payment_not_found".into()))?;
 
         if payment.order_id != order_id {
-            return Err(Error::Dispenser("payment_order_mismatch".into()));
+            return Err(Error::General("payment_order_mismatch".into()));
         }
 
         // Delete the payment

@@ -26,7 +26,6 @@ import { taxPageRoute } from "../../pages/dictionary-tax";
 import { userPageRoute } from "../../pages/dictionary-user";
 import { GenericLayout, GuestLayout, NakedLayout } from "../../pages/layouts";
 import { loginPageRoute } from "../../pages/login";
-import { contractPageRoute } from "../../pages/main-contract";
 import { homePageRoute } from "../../pages/main-home";
 import { page404Route } from "../../pages/page-404";
 import { pathKeys } from "../../shared/lib/react-router";
@@ -67,7 +66,6 @@ const router = createBrowserRouter([
           createProtectedRoute(homePageRoute, "home"),
           createProtectedRoute(shiftPageRoute, "shifts"),
           createProtectedRoute(orderPageRoute, "orders"),
-          createProtectedRoute(contractPageRoute, "contracts"),
           createProtectedRoute(clientPageRoute, "clients"),
 
           // Operation pages with protection

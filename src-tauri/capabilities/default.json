@@ -16,9 +16,6 @@
       "identifier": "opener:allow-open-url",
       "allow": [
         {
-          "url": "https://texnouz.uz/*"
-        },
-        {
           "url": "https://*"
         }
       ]

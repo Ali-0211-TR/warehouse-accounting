@@ -1,14 +1,10 @@
 import { ShiftData } from "@/shared/bindings/ShiftData";
 import { Input } from "@/shared/ui/shadcn/input";
-import { ScrollArea, ScrollBar } from "@/shared/ui/shadcn/scroll-area";
 import {
-  ChevronDown,
-  ChevronRight,
   Droplets,
   Gauge,
   Thermometer,
 } from "lucide-react";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 interface ShiftDataTableProps {
@@ -39,17 +35,6 @@ export function ShiftDataTable({
   title,
 }: ShiftDataTableProps) {
   const { t } = useTranslation();
-  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
-
-  const toggleRow = (rowNumber: number) => {
-    const newExpanded = new Set(expandedRows);
-    if (newExpanded.has(rowNumber)) {
-      newExpanded.delete(rowNumber);
-    } else {
-      newExpanded.add(rowNumber);
-    }
-    setExpandedRows(newExpanded);
-  };
 
   const handleInputChange = (
     rowIdx: number,
@@ -57,9 +42,6 @@ export function ShiftDataTable({
     value: number
   ) => {
     if (!editable || !onChange) return;
-
-    // Only allow editing of numeric fields, not dispensers_data
-    if (field === "dispensers_data") return;
 
     const updated = [...data];
     updated[rowIdx] = { ...updated[rowIdx], [field]: value };
@@ -152,22 +134,7 @@ export function ShiftDataTable({
                   className="border-b hover:bg-muted/30 transition-colors"
                 >
                   <td className="p-3 font-mono font-medium border-r">
-                    <div className="flex items-center gap-2">
-                      {row.dispensers_data &&
-                        row.dispensers_data.length > 0 && (
-                          <button
-                            onClick={() => toggleRow(row.number)}
-                            className="p-1 hover:bg-muted rounded"
-                          >
-                            {expandedRows.has(row.number) ? (
-                              <ChevronDown className="h-4 w-4" />
-                            ) : (
-                              <ChevronRight className="h-4 w-4" />
-                            )}
-                          </button>
-                        )}
-                      {row.number}
-                    </div>
+                    {row.number}
                   </td>
                   <td className="p-3 border-r">{row.gas}</td>
                   {editableFields.map(field => (
@@ -195,101 +162,6 @@ export function ShiftDataTable({
                     </td>
                   ))}
                 </tr>
-
-                {/* Nested dispensers table */}
-                {expandedRows.has(row.number) &&
-                  row.dispensers_data &&
-                  row.dispensers_data.length > 0 && (
-                    <tr key={`${row.number}-dispensers`}>
-                      <td colSpan={13} className="p-0 bg-muted/20">
-                        <div className="p-4">
-                          <h5 className="font-medium mb-3 text-sm text-muted-foreground">
-                            {t("shift_data.dispensers_data")}
-                          </h5>
-                          <div className="rounded border bg-background">
-                            <ScrollArea className="w-full">
-                              <div className="overflow-x-auto">
-                                <table className="w-full text-sm min-w-[800px]">
-                                  <thead>
-                                    <tr className="bg-muted/30 border-b">
-                                      <th className="p-2 text-left font-medium border-r text-xs">
-                                        {t("shift_data.dispenser_name")}
-                                      </th>
-                                      <th className="p-2 text-left font-medium border-r text-xs">
-                                        {t("shift_data.nozzle_address")}
-                                      </th>
-                                      <th className="p-2 text-right font-medium border-r text-xs">
-                                        {t("shift_data.shift_volume")}
-                                      </th>
-                                      <th className="p-2 text-right font-medium border-r text-xs">
-                                        {t("shift_data.shift_amount")}
-                                      </th>
-                                      <th className="p-2 text-right font-medium border-r text-xs">
-                                        {t("shift_data.total_volume")}
-                                      </th>
-                                      <th className="p-2 text-right font-medium border-r text-xs">
-                                        {t("shift_data.total_amount")}
-                                      </th>
-                                      <th className="p-2 text-right font-medium border-r text-xs">
-                                        {t("shift_data.calc_volume")}
-                                      </th>
-                                      <th className="p-2 text-right font-medium text-xs">
-                                        {t("shift_data.calc_amount")}
-                                      </th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {row.dispensers_data.map(
-                                      (dispenser, dispenserIdx) => (
-                                        <tr
-                                          key={dispenserIdx}
-                                          className="border-b last:border-b-0 hover:bg-muted/20"
-                                        >
-                                          <td className="p-2 border-r font-medium">
-                                            {dispenser.dispenser_name}
-                                          </td>
-                                          <td className="p-2 border-r font-mono">
-                                            {dispenser.nozzle_addres}
-                                          </td>
-                                          <td className="p-2 border-r text-right font-mono">
-                                            {formatValue(
-                                              dispenser.shift_volume
-                                            )}
-                                          </td>
-                                          <td className="p-2 border-r text-right font-mono">
-                                            {formatValue(
-                                              dispenser.shift_amount
-                                            )}
-                                          </td>
-                                          <td className="p-2 border-r text-right font-mono">
-                                            {formatValue(
-                                              dispenser.total_volume
-                                            )}
-                                          </td>
-                                          <td className="p-2 border-r text-right font-mono">
-                                            {formatValue(
-                                              dispenser.total_amount
-                                            )}
-                                          </td>
-                                          <td className="p-2 border-r text-right font-mono">
-                                            {formatValue(dispenser.calc_volume)}
-                                          </td>
-                                          <td className="p-2 text-right font-mono">
-                                            {formatValue(dispenser.calc_amount)}
-                                          </td>
-                                        </tr>
-                                      )
-                                    )}
-                                  </tbody>
-                                </table>
-                              </div>
-                              <ScrollBar orientation="horizontal" />
-                            </ScrollArea>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
               </>
             ))}
           </tbody>

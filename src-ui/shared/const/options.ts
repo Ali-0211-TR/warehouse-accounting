@@ -1,27 +1,17 @@
 import type { DiscountBoundType } from "@/shared/bindings/DiscountBoundType";
 import type { DiscountType } from "@/shared/bindings/DiscountType";
 import type { DiscountUnitType } from "@/shared/bindings/DiscountUnitType";
-import type { DispenserProtocolType } from "@/shared/bindings/DispenserProtocolType";
 import type { GroupType } from "@/shared/bindings/GroupType";
 import type { OrderType } from "@/shared/bindings/OrderType";
 import type { ProductType } from "@/shared/bindings/ProductType";
 
-import { TankProtocolType } from "@/shared/bindings/TankProtocolType";
-
-export const TANK_PROTOCOL_OPTIONS: Array<{
-  value: TankProtocolType;
-  label: string;
-}> = [
-  { value: "TexnoUz", label: "Texnouz" },
-  { value: "Arrow", label: "Arrow" },
-];
 // General option arrays that can be reused across components
 export const DISCOUNT_TYPE_OPTIONS: Array<{
   value: DiscountType;
   label: string;
 }> = [
   { value: "Price", label: "lists.discount_type.Price" },
-  { value: "Card", label: "lists.discount_type.Card" },
+  { value: "Percentage", label: "lists.discount_type.Percentage" },
 ];
 
 export const DISCOUNT_BOUND_TYPE_OPTIONS: Array<{
@@ -57,12 +47,7 @@ export const GROUP_TYPE_OPTIONS: Array<{ value: GroupType; label: string }> = [
   { value: "Product", label: "lists.group_type.Product" },
 ];
 
-export const CAMERA_TYPE_OPTIONS = [
-  { value: "Blocked", label: "lists.camera_type.Blocked" },
-  { value: "Local", label: "lists.camera_type.Local" },
-  { value: "NetworkJpeg", label: "lists.camera_type.NetworkJpeg" },
-  { value: "NetworkMjpeg", label: "lists.camera_type.NetworkMjpeg" },
-] as const;
+
 
 // export const SHOP_TYPE_OPTIONS: Array<{ value: ShopType; label: string }> = [
 //   { value: "All", label: "lists.shop_type.All" },
@@ -79,11 +64,7 @@ export const CAMERA_TYPE_OPTIONS = [
 //   { value: "ProtocolTmp", label: "lists.shop_protocol.ProtocolTmp" },
 // ];
 
-export const DISPENSER_STATE_OPTIONS = [
-  { value: "Active", label: "lists.dispenser_state.Active" },
-  { value: "Blocked", label: "lists.dispenser_state.Blocked" },
-  { value: "Inactive", label: "lists.dispenser_state.Inactive" },
-] as const;
+
 
 export const UNIT_PRESETS = [
   // Volume units
@@ -130,14 +111,7 @@ export const MARK_PRESETS = [
   { value: "racing", name: "Гоночный", category: "vip" },
 ] as const;
 
-export const DISPENSER_PROTOCOL_OPTIONS: Array<{
-  value: DispenserProtocolType;
-  label: string;
-}> = [
-  { value: "BlueSky", label: "BlueSky" },
-  { value: "TexnoUz", label: "TexnoUz" },
-  { value: "Shelf", label: "Shelf" },
-];
+
 
 export const PORT_SPEED_OPTIONS = [
   { value: 9600, label: "9600" },

@@ -1,6 +1,5 @@
 import { ClientEntity, useClientStore } from "@/entities/client";
 import { ClientSelector } from "@/entities/client/ui/ClientSelector";
-import { useContractStore } from "@/entities/contract";
 import { orderFilterSchema } from "@/entities/order/model/schemas";
 import { getOrderTypeOptions } from "@/shared/const/lists";
 import { Button } from "@/shared/ui/shadcn/button";
@@ -49,7 +48,6 @@ interface OrderFiltersProps {
 export function OrderFilters({ open, onClose }: OrderFiltersProps) {
   const { t } = useTranslation();
   const { clients, loadClients } = useClientStore();
-  const { loadContracts } = useContractStore();
   const orderTypeOptions = getOrderTypeOptions();
 
   const setFilters = useOrderStore((s) => s.setFilters);
@@ -61,10 +59,9 @@ export function OrderFilters({ open, onClose }: OrderFiltersProps) {
   useEffect(() => {
     if (open) {
       loadClients();
-      loadContracts();
       loadShifts();
     }
-  }, [open, loadClients, loadContracts, loadShifts]);
+  }, [open, loadClients, loadShifts]);
 
   const form = useForm<z.infer<typeof orderFilterSchema>>({
     resolver: zodResolver(orderFilterSchema),

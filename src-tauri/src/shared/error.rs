@@ -12,7 +12,6 @@ pub type Result<T> = core::result::Result<T, Error>;
     ts(export, export_to = "../../src-ui/shared/bindings/")
 )]
 pub enum Error {
-    Dispenser(String),
     CtxFail,
     RecordNotFound,
     StoreFailToCreate(String),
@@ -40,7 +39,6 @@ impl From<sea_orm::DbErr> for Error {
 impl std::fmt::Display for Error {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> core::result::Result<(), std::fmt::Error> {
         match self {
-            Error::Dispenser(msg) => write!(fmt, "dispenser_error.{}", msg),
             Error::CtxFail => write!(fmt, "ctx_fail"),
             Error::RecordNotFound => write!(fmt, "record_not_found"),
             Error::StoreFailToCreate(msg) => write!(fmt, "store_fail_to_create.{}", msg),

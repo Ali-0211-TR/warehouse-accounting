@@ -7,7 +7,6 @@ import {
 } from "@/shared/ui/components/ServerEntityCards";
 import { ServerEntityTable } from "@/shared/ui/components/ServerEntityTable";
 import { Badge } from "@/shared/ui/shadcn/badge";
-import { DropdownMenuItem } from "@/shared/ui/shadcn/dropdown-menu";
 import { t } from "i18next";
 import {
   Building,
@@ -15,10 +14,8 @@ import {
   MapPin,
   Phone,
   User,
-  Wallet,
 } from "lucide-react";
 import { useState } from "react";
-import { ClientCardsDialog } from "./ClientCardsDialog";
 
 interface ClientListProps {
   clients: ClientEntity[];
@@ -44,8 +41,6 @@ export function ClientList({
   onSelectionChange,
 }: ClientListProps) {
   const [deleteClient, setDeleteClient] = useState<ClientEntity | null>(null);
-  const [cardsDialogClient, setCardsDialogClient] =
-    useState<ClientEntity | null>(null);
 
   const handleDeleteClick = (client: ClientEntity) => {
     setDeleteClient(client);
@@ -139,13 +134,7 @@ export function ClientList({
   );
 
   // Custom actions for client cards
-  const getClientCardActions = (): CardAction<ClientEntity>[] => [
-    {
-      label: t("client.cards"),
-      icon: <Wallet className="h-4 w-4 mr-2" />,
-      onClick: client => setCardsDialogClient(client),
-    },
-  ];
+  const getClientCardActions = (): CardAction<ClientEntity>[] => [];
 
   const columns = [
     // Hidden ID column (UUID not user-friendly)
@@ -288,11 +277,8 @@ export function ClientList({
             emptyMessage={"message.no_data"}
             selectable={selectable}
             onSelectionChange={onSelectionChange}
-            actions={client => (
-              <DropdownMenuItem onClick={() => setCardsDialogClient(client)}>
-                <Wallet className="h-4 w-4 mr-2" />
-                {t("client.cards")}
-              </DropdownMenuItem>
+            actions={_client => (
+              <></>
             )}
             // Pagination props
             pageIndex={pagination.page - 1} // Convert 1-based to 0-based
@@ -325,13 +311,6 @@ export function ClientList({
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
         confirmClassName="bg-red-600 hover:bg-red-700"
-      />
-
-      {/* Cards Management Dialog */}
-      <ClientCardsDialog
-        open={!!cardsDialogClient}
-        onClose={() => setCardsDialogClient(null)}
-        client={cardsDialogClient}
       />
     </div>
   );

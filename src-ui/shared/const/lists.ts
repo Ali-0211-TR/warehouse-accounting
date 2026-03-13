@@ -1,12 +1,5 @@
 import { t } from "i18next";
-import { CameraType } from "../bindings/CameraType";
 
-export const cameraOptions: CameraType[] = [
-  "Blocked",
-  "Local",
-  "NetworkJpeg",
-  "NetworkMjpeg",
-];
 
 export interface SelectOption {
   id: string;
@@ -37,11 +30,7 @@ export interface SelectOption {
 //     }
 // ]
 
-export const getDispenserProtocolTypeOptions = () => [
-  { label: t("lists.dispenser_protocol_type.BlueSky"), id: "BlueSky" },
-  { label: t("lists.dispenser_protocol_type.TexnoUz"), id: "TexnoUz" },
-  { label: t("lists.dispenser_protocol_type.Shelf"), id: "Shelf" },
-];
+
 
 export const getGroupTypeOptions = () => [
   { label: t("lists.group_type.No"), id: "No" },
@@ -88,13 +77,6 @@ export const getRoleTypeOptions = () => [
   { label: t("lists.role_type.Seller"), id: "Seller" },
   { label: t("lists.role_type.Operator"), id: "Operator" },
   { label: t("lists.role_type.Remote"), id: "Remote" },
-];
-
-export const getCameraTypeOptions = () => [
-  { label: t("lists.camera_type.Blocked"), id: "Blocked" },
-  { label: t("lists.camera_type.Local"), id: "Local" },
-  { label: t("lists.camera_type.NetworkJpeg"), id: "NetworkJpeg" },
-  { label: t("lists.camera_type.NetworkMjpeg"), id: "NetworkMjpeg" },
 ];
 
 export const getShopTypeOptions = () => [

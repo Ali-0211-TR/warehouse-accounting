@@ -22,18 +22,6 @@ pub async fn save_limit(app: AppHandle<Wry>, params: LimitDTO) -> IpcResponse<Li
 }
 
 #[command]
-pub async fn get_limits_by_card_id(
-    app: AppHandle<Wry>,
-    params: IdDTO,
-) -> IpcResponse<Vec<LimitEntity>> {
-    crate::ipc_handler_async!({
-        let ctx = Ctx::from_app(app)?;
-        ctx.is_logged_in()?;
-        get_limits_by_card_id_usecase(&ctx, params.id).await
-    })
-}
-
-#[command]
 pub async fn get_limit_by_id(app: AppHandle<Wry>, params: IdDTO) -> IpcResponse<LimitEntity> {
     crate::ipc_handler_async!({
         let ctx = Ctx::from_app(app)?;

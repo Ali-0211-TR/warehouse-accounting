@@ -2,26 +2,16 @@
 
 pub mod prelude;
 
-pub mod cameras;
-pub mod cards;
 pub mod clients;
-pub mod contract_cars;
-pub mod contract_products;
-pub mod contracts;
 pub mod device_config;
 pub mod discount_to_group;
 pub mod discount_to_product;
 pub mod discounts;
-pub mod dispenser_ports;
-pub mod dispensers;
-pub mod fueling_order;
 pub mod groups;
 pub mod limits;
 pub mod marks;
-pub mod nozzles;
 pub mod order_item_discounts;
 pub mod order_item_taxes;
-pub mod order_item_to_contract_product;
 pub mod order_items;
 pub mod orders;
 pub mod payments;
@@ -30,7 +20,6 @@ pub mod prices;
 pub mod products;
 pub mod roles;
 pub mod shifts;
-pub mod tanks;
 pub mod tax_to_product;
 pub mod taxes;
 pub mod units;

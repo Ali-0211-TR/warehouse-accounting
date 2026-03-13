@@ -32,7 +32,6 @@ pub async fn ipc_add_payment_to_order(
             ticket: params.ticket,
             discard: None,
             data: params.data,
-            card: None, // TODO: Handle card_id if needed
             created_at: chrono::Utc::now().to_rfc3339(),
             updated_at: chrono::Utc::now().to_rfc3339(),
             deleted_at: None,

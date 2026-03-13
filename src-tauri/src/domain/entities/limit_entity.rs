@@ -5,9 +5,7 @@ use ts_rs::TS;
 
 use crate::shared::types::LimitType;
 
-use super::{
-    card_entity::CardEntity, discount_entity::DiscountEntity, product_entity::ProductEntity,
-};
+use super::{discount_entity::DiscountEntity, product_entity::ProductEntity};
 
 // #[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
 // #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -44,7 +42,6 @@ use super::{
 )]
 pub struct LimitEntity {
     pub id: Option<String>,
-    pub card: Option<CardEntity>,
     pub limit_type: LimitType,
     pub product: Option<ProductEntity>,
     #[cfg_attr(

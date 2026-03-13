@@ -1,7 +1,7 @@
 use crate::Result;
 use crate::adapters::dtos::{LazyTableStateDTO, PaginatorDTO};
 use crate::domain::entities::client_entity::{ClientColumn, ClientFilter};
-use crate::domain::repositories::{CardRepository, ClientRepository};
+use crate::domain::repositories::ClientRepository;
 use crate::infrastructure::database::model_store::DataStore;
 use crate::shared::error::Error;
 use crate::{domain::entities::client_entity::ClientEntity, shared::types::ClientType};
@@ -88,7 +88,6 @@ impl ClientRepository {
     pub async fn get_by_id(
         db: Arc<DataStore>,
         id: String,
-        include_cards: bool,
     ) -> Result<ClientEntity> {
         let db_conn = db.get_db()?;
         let data = clients::Entity::find_by_id(id.clone())
@@ -97,13 +96,7 @@ impl ClientRepository {
             .await?;
         let data = data.ok_or(Self::client_not_found_error())?;
 
-        let mut client_entity: ClientEntity = data.into();
-
-        // Load cards with their limits if requested
-        if include_cards {
-            let cards = CardRepository::get_by_client_id(db.clone(), id, true).await?;
-            client_entity.cards = Some(cards);
-        }
+        let client_entity: ClientEntity = data.into();
 
         Ok(client_entity)
     }
@@ -271,7 +264,6 @@ impl From<clients::Model> for ClientEntity {
         ClientEntity {
             id: Some(model.id),
             device_id: model.device_id,
-            cards: None,
             client_type: ClientType::from_str(&model.client_type).unwrap(),
             name: model.name,
             name_short: model.name_short,

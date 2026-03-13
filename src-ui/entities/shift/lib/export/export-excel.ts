@@ -106,38 +106,7 @@ export function exportShiftToExcel(
     addSheetToWorkbook(wb, ws, t("shift.data_at_close", "Конец смены"));
   }
 
-  // ──── Лист 4: Данные ТРК по резервуарам ────
-  if (shift.data_close && shift.data_close.some(t => t.dispensers_data && t.dispensers_data.length > 0)) {
-    const headers = [
-      t("tank.number", "Резервуар №"),
-      t("tank.product", "Продукт"),
-      t("dispenser.name", "ТРК"),
-      t("dispenser.nozzle", "Пистолет"),
-      t("dispenser.shift_volume", "Объём за смену (л)"),
-      t("dispenser.shift_amount", "Сумма за смену"),
-    ];
-
-    const rows: (string | number)[][] = [headers];
-    for (const tank of shift.data_close) {
-      if (tank.dispensers_data && tank.dispensers_data.length > 0) {
-        for (const disp of tank.dispensers_data) {
-          rows.push([
-            tank.number,
-            tank.gas,
-            disp.dispenser_name,
-            disp.nozzle_addres,
-            disp.shift_volume.toFixed(2),
-            disp.shift_amount.toFixed(2),
-          ]);
-        }
-      }
-    }
-
-    const ws = createSheetFromAOA(rows, [14, 20, 18, 14, 20, 20]);
-    addSheetToWorkbook(wb, ws, t("dispenser.data", "Данные ТРК"));
-  }
-
-  // ──── Лист 5: Изменение объёмов ────
+  // ──── Лист 4: Изменение объёмов ────
   if (shift.data_open && shift.data_close) {
     const headers = [
       t("tank.number", "№"),
@@ -145,7 +114,6 @@ export function exportShiftToExcel(
       t("shift.volume_start", "Объём начало (л)"),
       t("shift.volume_end", "Объём конец (л)"),
       t("shift.volume_diff", "Разница (л)"),
-      t("shift.dispensed", "Отпущено по ТРК (л)"),
     ];
 
     const rows: (string | number)[][] = [headers];
@@ -153,7 +121,6 @@ export function exportShiftToExcel(
       const tankClose = shift.data_close.find(tc => tc.number === tankOpen.number);
       if (tankClose) {
         const diff = tankOpen.volume_current - tankClose.volume_current;
-        const totalDispensed = tankClose.dispensers_data?.reduce((sum, d) => sum + d.shift_volume, 0) || 0;
 
         rows.push([
           tankOpen.number,
@@ -161,12 +128,11 @@ export function exportShiftToExcel(
           tankOpen.volume_current.toFixed(2),
           tankClose.volume_current.toFixed(2),
           `${diff > 0 ? '+' : ''}${diff.toFixed(2)}`,
-          totalDispensed.toFixed(2),
         ]);
       }
     }
 
-    const ws = createSheetFromAOA(rows, [8, 20, 20, 20, 16, 22]);
+    const ws = createSheetFromAOA(rows, [8, 20, 20, 20, 16]);
     addSheetToWorkbook(wb, ws, t("shift.volume_difference", "Изменение объёмов"));
   }
 

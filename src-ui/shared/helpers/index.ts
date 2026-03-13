@@ -1,5 +1,3 @@
-import { DispenserEntity } from "../bindings/DispenserEntity";
-import { NozzleEntity } from "../bindings/NozzleEntity";
 import { SortOrder } from "../bindings/SortOrder";
 
 export const formatStrDate = (value: string | null) => {
@@ -142,19 +140,6 @@ export function deepEqual<T>(obj1: T, obj2: T): boolean {
 // function isDataTableFilter(filter: any): filter is DataTableFilterMetaData {
 //     return filter && typeof filter === 'object' && 'value' in filter;
 // }
-
-export function getSelectedNozzle(
-  dispenser: DispenserEntity
-): NozzleEntity | null {
-  if (dispenser.selected_nozzle_id) {
-    return (
-      dispenser.nozzles.find(
-        nozzle => nozzle.id === dispenser.selected_nozzle_id
-      ) ?? null
-    );
-  }
-  return null;
-}
 
 export function updateOrInsertImmutable<
   T extends { id: string | number | null }

@@ -93,7 +93,7 @@ export function exportProductMovementsToExcel(
     detailRows.push([
       order.id || "-",
       getOrderTypeName(order.order_type, t),
-      formatDate(order.d_move),
+      formatDate(order.d_move ?? ""),
       order.client?.name || "-",
       formatCurrency(order.summ),
       formatCurrency(order.tax),

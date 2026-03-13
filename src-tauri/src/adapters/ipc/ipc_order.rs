@@ -5,7 +5,7 @@ use tauri::{AppHandle, Wry, command};
 use crate::{
     adapters::{
         dtos::{
-            AddProductDTO, CloseOrderDTO, DispenserHistoryParams, IdDTO, LazyTableStateDTO,
+            AddProductDTO, CloseOrderDTO, IdDTO, LazyTableStateDTO,
             MetaPaginatorDTO, OptionIdDTO, OrderMovementSummaryMeta, PaginatorDTO,
             RemoveOrderItemDTO,
         },
@@ -34,17 +34,6 @@ pub async fn get_active_orders(app: AppHandle<Wry>) -> IpcResponse<Vec<OrderEnti
     })
 }
 #[command]
-pub async fn get_history_orders(
-    app: AppHandle<Wry>,
-    params: DispenserHistoryParams,
-) -> IpcResponse<Vec<OrderEntity>> {
-    crate::ipc_handler_async!({
-        let ctx = Ctx::from_app(app)?;
-        get_history_orders_usecase(&ctx, params.dispenser_id, params.limit).await
-    })
-}
-
-#[command]
 pub async fn close_active_order(
     app: AppHandle<Wry>,
     params: CloseOrderDTO,
@@ -55,15 +44,6 @@ pub async fn close_active_order(
         close_order_usecase(&ctx, params).await
     })
 }
-#[command]
-pub async fn close_fueling(app: AppHandle<Wry>, params: IdDTO) -> IpcResponse<OrderEntity> {
-    crate::ipc_handler_async!({
-        let ctx = Ctx::from_app(app)?;
-        ctx.is_logged_in()?;
-        close_fueling_usecase(&ctx, params.id).await
-    })
-}
-
 #[command]
 pub async fn add_income_order(
     app: AppHandle<Wry>,

@@ -20,14 +20,6 @@ pub struct Model {
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-        belongs_to = "super::cameras::Entity",
-        from = "Column::CameraId",
-        to = "super::cameras::Column::Id",
-        on_update = "NoAction",
-        on_delete = "Restrict"
-    )]
-    Cameras,
-    #[sea_orm(
         belongs_to = "super::orders::Entity",
         from = "Column::OrderId",
         to = "super::orders::Column::Id",
@@ -35,12 +27,6 @@ pub enum Relation {
         on_delete = "Restrict"
     )]
     Orders,
-}
-
-impl Related<super::cameras::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Cameras.def()
-    }
 }
 
 impl Related<super::orders::Entity> for Entity {

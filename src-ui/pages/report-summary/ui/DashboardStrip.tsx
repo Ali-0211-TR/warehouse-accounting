@@ -1,36 +1,22 @@
 import { useShiftStore } from "@/entities/shift/model/store";
-import { useDispenserStore } from "@/entities/dispenser";
 import { Card, CardContent } from "@/shared/ui/shadcn/card";
 import { Badge } from "@/shared/ui/shadcn/badge";
-import { Clock, Fuel, Monitor, User } from "lucide-react";
+import { Clock, User } from "lucide-react";
 import { differenceInMinutes } from "date-fns";
 import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
- * Real-time dashboard strip showing current shift + dispenser status.
+ * Real-time dashboard strip showing current shift status.
  * Shown at the top of SummaryReportPage overview tab.
  */
 export function DashboardStrip() {
   const { t } = useTranslation();
   const { currentShift, getCurrentShift } = useShiftStore();
-  const { dispensers } = useDispenserStore();
 
   useEffect(() => {
     getCurrentShift().catch(() => {});
   }, [getCurrentShift]);
-
-  const dispenserStats = useMemo(() => {
-    let online = 0;
-    let total = 0;
-    let totalNozzles = 0;
-    dispensers.forEach((d) => {
-      total++;
-      if (d.state === "Active") online++;
-      totalNozzles += d.nozzles?.length || 0;
-    });
-    return { online, total, totalNozzles };
-  }, [dispensers]);
 
   const shiftDuration = useMemo(() => {
     if (!currentShift) return null;
@@ -41,7 +27,7 @@ export function DashboardStrip() {
   }, [currentShift]);
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+    <div className="grid grid-cols-2 gap-2">
       {/* Current shift */}
       <Card className="border-blue-200 dark:border-blue-800">
         <CardContent className="pt-3 pb-2 px-3">
@@ -79,52 +65,6 @@ export function DashboardStrip() {
               </div>
               <div className="text-xs font-medium truncate mt-0.5">
                 {currentShift?.user_open?.full_name || currentShift?.user_open?.username || "—"}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Dispensers status */}
-      <Card>
-        <CardContent className="pt-3 pb-2 px-3">
-          <div className="flex items-center gap-2">
-            <Fuel className="h-4 w-4 text-orange-500 flex-shrink-0" />
-            <div className="min-w-0">
-              <div className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                {t("dashboard.dispensers", "ТРК")}
-              </div>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="text-xs font-medium">
-                  {dispenserStats.online}/{dispenserStats.total}
-                </span>
-                <Badge
-                  variant="outline"
-                  className={`text-[10px] px-1 py-0 ${
-                    dispenserStats.online === dispenserStats.total
-                      ? "text-green-600 border-green-200"
-                      : "text-yellow-600 border-yellow-200"
-                  }`}
-                >
-                  {dispenserStats.online === dispenserStats.total ? "OK" : "!"}
-                </Badge>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Nozzles */}
-      <Card>
-        <CardContent className="pt-3 pb-2 px-3">
-          <div className="flex items-center gap-2">
-            <Monitor className="h-4 w-4 text-cyan-500 flex-shrink-0" />
-            <div className="min-w-0">
-              <div className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                {t("dashboard.nozzles", "Пистолеты")}
-              </div>
-              <div className="text-xs font-medium mt-0.5">
-                {dispenserStats.totalNozzles}
               </div>
             </div>
           </div>

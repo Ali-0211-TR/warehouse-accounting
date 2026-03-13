@@ -110,22 +110,4 @@ pub struct ShiftData {
     pub volume_gas_calc: f64,
     pub volume_gas_measure: f64,
     pub volume_gas_corr: f64,
-    pub dispensers_data: Option<Vec<ShiftDispenserData>>,
-}
-
-#[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
-#[derive(Debug, Deserialize, Serialize, Clone)]
-#[cfg_attr(
-    not(any(target_os = "android", target_os = "ios")),
-    ts(export, export_to = "../../src-ui/shared/bindings/")
-)]
-pub struct ShiftDispenserData {
-    pub dispenser_name: String,
-    pub nozzle_addres: String,
-    pub shift_volume: f64,
-    pub shift_amount: f64,
-    pub total_volume: f64,
-    pub total_amount: f64,
-    pub calc_volume: f64,
-    pub calc_amount: f64,
 }

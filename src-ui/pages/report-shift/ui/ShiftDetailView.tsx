@@ -243,48 +243,6 @@ export function ShiftDetailView({ data, onBack }: ShiftDetailViewProps) {
         </Card>
       )}
 
-      {/* Dispenser data from shift */}
-      {shift.data_open?.some(d => d.dispensers_data && d.dispensers_data.length > 0) && (
-        <Card>
-          <CardHeader className="pb-2 pt-4 px-4">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Fuel className="h-4 w-4 text-orange-500" />
-              {t("shift.dispenser_data", "Данные ТРК")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b text-xs text-muted-foreground">
-                    <th className="text-left py-2 pr-3">{t("shift.dispenser", "ТРК")}</th>
-                    <th className="text-right py-2 pr-3">{t("shift.nozzle", "Пистолет")}</th>
-                    <th className="text-right py-2 pr-3">{t("shift.shift_volume", "Объём за смену")}</th>
-                    <th className="text-right py-2 pr-3">{t("shift.shift_amount", "Сумма за смену")}</th>
-                    <th className="text-right py-2 pr-3">{t("shift.total_volume", "Общий объём")}</th>
-                    <th className="text-right py-2">{t("shift.total_amount", "Общая сумма")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {shift.data_open.flatMap((tank) =>
-                    (tank.dispensers_data || []).map((dd) => (
-                      <tr key={`${tank.number}-${dd.nozzle_addres}`} className="border-b last:border-0">
-                        <td className="py-2 pr-3">{dd.dispenser_name}</td>
-                        <td className="py-2 pr-3 text-right font-mono">{dd.nozzle_addres}</td>
-                        <td className="py-2 pr-3 text-right font-mono">{dd.shift_volume.toFixed(2)}</td>
-                        <td className="py-2 pr-3 text-right font-mono">{fmtAmount(dd.shift_amount)}</td>
-                        <td className="py-2 pr-3 text-right font-mono">{dd.total_volume.toFixed(2)}</td>
-                        <td className="py-2 text-right font-mono">{fmtAmount(dd.total_amount)}</td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Orders list */}
       {orders.items.length > 0 && (
         <Card>

@@ -40,13 +40,6 @@ export const orderSelectors = {
     return orders.filter(order => order.client?.id === clientId);
   },
 
-  getOrdersByContract: (
-    orders: OrderEntity[],
-    contractId: string
-  ): OrderEntity[] => {
-    return orders.filter(order => order.contract?.id === contractId);
-  },
-
   getOrdersByType: (
     orders: OrderEntity[],
     orderType: string
@@ -67,59 +60,5 @@ export const orderSelectors = {
     productId: string
   ): OrderItemEntity[] => {
     return items.filter(item => item.product?.id === productId);
-  },
-
-  // Dispenser-specific selectors for performance optimization
-  getActiveOrderByDispenserId: (
-    orders: OrderEntity[],
-    _dispenserId: string,
-    nozzleIds: string[]
-  ): OrderEntity | null => {
-    return (
-      orders.find(order => {
-        if (!order.fueling_order_item_id) return false;
-        const fuelingOrderItem = order.items.find(
-          item => item.id === order.fueling_order_item_id
-        );
-        return (
-          fuelingOrderItem?.fueling_order?.nozzle_id != null &&
-          nozzleIds.includes(fuelingOrderItem.fueling_order.nozzle_id)
-        );
-      }) || null
-    );
-  },
-
-  getFuelingOrderByDispenserId: (
-    orders: OrderEntity[],
-    dispenserId: string,
-    nozzleIds: string[]
-  ) => {
-    const activeOrder = orderSelectors.getActiveOrderByDispenserId(
-      orders,
-      dispenserId,
-      nozzleIds
-    );
-    if (activeOrder && "items" in activeOrder) {
-      const { fueling_order_item_id, items } = activeOrder;
-      const orderItem = items.find(item => item.id === fueling_order_item_id);
-      return orderItem?.fueling_order ?? null;
-    }
-    return null;
-  },
-
-  // Memoized selector creator for specific dispenser orders
-  createDispenserOrderSelector: (dispenserId: string, nozzleIds: string[]) => {
-    return (orders: OrderEntity[]) => ({
-      activeOrder: orderSelectors.getActiveOrderByDispenserId(
-        orders,
-        dispenserId,
-        nozzleIds
-      ),
-      fuelingOrder: orderSelectors.getFuelingOrderByDispenserId(
-        orders,
-        dispenserId,
-        nozzleIds
-      ),
-    });
   },
 };

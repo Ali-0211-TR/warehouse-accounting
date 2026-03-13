@@ -23,14 +23,10 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_one = "super::fueling_order::Entity")]
-    FuelingOrder,
     #[sea_orm(has_many = "super::order_item_discounts::Entity")]
     OrderItemDiscounts,
     #[sea_orm(has_many = "super::order_item_taxes::Entity")]
     OrderItemTaxes,
-    #[sea_orm(has_many = "super::order_item_to_contract_product::Entity")]
-    OrderItemToContractProduct,
     #[sea_orm(
         belongs_to = "super::orders::Entity",
         from = "Column::OrderId",
@@ -49,12 +45,6 @@ pub enum Relation {
     Products,
 }
 
-impl Related<super::fueling_order::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::FuelingOrder.def()
-    }
-}
-
 impl Related<super::order_item_discounts::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::OrderItemDiscounts.def()
@@ -67,12 +57,6 @@ impl Related<super::order_item_taxes::Entity> for Entity {
     }
 }
 
-impl Related<super::order_item_to_contract_product::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::OrderItemToContractProduct.def()
-    }
-}
-
 impl Related<super::orders::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Orders.def()
@@ -82,19 +66,6 @@ impl Related<super::orders::Entity> for Entity {
 impl Related<super::products::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Products.def()
-    }
-}
-
-impl Related<super::contract_products::Entity> for Entity {
-    fn to() -> RelationDef {
-        super::order_item_to_contract_product::Relation::ContractProducts.def()
-    }
-    fn via() -> Option<RelationDef> {
-        Some(
-            super::order_item_to_contract_product::Relation::OrderItems
-                .def()
-                .rev(),
-        )
     }
 }
 

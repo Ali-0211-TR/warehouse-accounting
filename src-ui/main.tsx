@@ -57,11 +57,11 @@ try {
 }
 
 // Get saved theme from localStorage or use default
-const savedTheme = localStorage.getItem('texno-uz-gsms-theme') || 'dark';
+const savedTheme = localStorage.getItem('sklad-uchot-theme') || 'dark';
 
 createRoot(document.getElementById('root')!).render(
   // <StrictMode>
-  <ThemeProvider defaultTheme={savedTheme as any} storageKey="texno-uz-gsms-theme">
+  <ThemeProvider defaultTheme={savedTheme as any} storageKey="sklad-uchot-theme">
     <Toaster />
     <Provider />
   </ThemeProvider>

@@ -39,7 +39,7 @@ impl MigrationTrait for Migration {
                 "device-default-001".into(),
                 "Development Device".into(),
                 "http://localhost:3000".into(),
-                "TexnoUz Company".into(),
+                "Sklad Uchot".into(),
                 "123456789".into(),
                 "Tashkent, Uzbekistan".into(),
                 "Main Station".into(),

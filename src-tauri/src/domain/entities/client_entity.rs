@@ -4,8 +4,6 @@ use ts_rs::TS;
 
 use crate::shared::types::ClientType;
 
-use super::card_entity::CardEntity;
-
 #[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[cfg_attr(
@@ -53,7 +51,6 @@ pub struct ClientFilter {
 pub struct ClientEntity {
     pub id: Option<String>,
     pub device_id: String,
-    pub cards: Option<Vec<CardEntity>>,
     pub client_type: ClientType,
     pub name: String,
     pub name_short: String,

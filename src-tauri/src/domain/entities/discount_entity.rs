@@ -49,10 +49,6 @@ impl DiscountEntity {
     }
 
     pub fn calculate_amount(&self, base_price: Decimal, quantity: Decimal) -> Decimal {
-        match self.discount_type {
-            DiscountType::Price => (base_price * quantity * self.value) / Decimal::from(100),
-            DiscountType::Card => self.value * quantity,
-            // Add other discount types as needed
-        }
+        (base_price * quantity * self.value) / Decimal::from(100)
     }
 }

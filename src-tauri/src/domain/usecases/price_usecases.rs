@@ -3,7 +3,6 @@ use crate::adapters::dtos::PriceDTO;
 use crate::domain::entities::price_entity::PriceEntity;
 use crate::domain::repositories::{PriceRepository, ProductRepository};
 use crate::shared::ctx::Ctx;
-use crate::shared::ctx::dispenser_ops::DispenserOps;
 
 pub async fn get_prices_usecase(ctx: &Ctx, product_id: String) -> Result<Vec<PriceEntity>> {
     let data = PriceRepository::product_prices(ctx.get_db(), product_id).await?;

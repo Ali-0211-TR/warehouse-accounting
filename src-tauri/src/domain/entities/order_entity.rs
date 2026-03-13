@@ -20,8 +20,7 @@ where
 }
 
 use super::{
-    client_entity::ClientEntity, contract_car_entity::ContractCarEntity,
-    contract_entity::ContractEntity, order_item_entity::OrderItemEntity,
+    client_entity::ClientEntity, order_item_entity::OrderItemEntity,
     picture_entity::PictureEntity,
 };
 
@@ -40,8 +39,6 @@ pub enum OrderColumn {
     Tax,
     Discard,
     ClientId,
-    ContractId,
-    ContractCarId,
 }
 
 #[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
@@ -95,10 +92,7 @@ pub struct OrderEntity {
     pub tax: Decimal,
     pub discard: Option<String>,
     pub client: Option<ClientEntity>,
-    pub contract: Option<ContractEntity>,
-    pub contract_car: Option<ContractCarEntity>,
     pub items: Vec<OrderItemEntity>,
-    pub fueling_order_item_id: Option<String>,
     pub payments: Vec<PaymentEntity>,
     pub pictures: Vec<PictureEntity>,
     pub device_id: String,
@@ -113,7 +107,6 @@ impl OrderEntity {
     pub fn new_order(
         client: Option<ClientEntity>,
         order_type: OrderType,
-        contract_car: Option<ContractCarEntity>,
     ) -> OrderEntity {
         OrderEntity {
             id: Some(uuid::Uuid::new_v4().to_string()), // Generate UUID for new orders
@@ -125,34 +118,13 @@ impl OrderEntity {
             discard: None,
             client,
             items: [].to_vec(),
-            fueling_order_item_id: None,
             pictures: [].to_vec(),
             payments: [].to_vec(),
-            contract: None,
-            contract_car,
             device_id: "singleton".to_string(),
             created_at: "CURRENT_TIMESTAMP".to_string(),
             updated_at: "CURRENT_TIMESTAMP".to_string(),
             deleted_at: None,
             version: 1,
         }
-    }
-
-    pub fn get_fueling_item(&mut self) -> Option<&mut OrderItemEntity> {
-        self.items
-            .iter_mut()
-            .find(|i| i.id == self.fueling_order_item_id)
-    }
-    pub fn has_active_fueling_item(&self) -> bool {
-        self.items.iter().any(|i| {
-            i.fueling_order.is_some() && i.fueling_order.as_ref().unwrap().d_move.is_none()
-        })
-    }
-
-    pub fn get_fueling_nozzle_id(&self) -> Option<String> {
-        self.items
-            .iter()
-            .find(|i| i.fueling_order.is_some())
-            .and_then(|i| i.fueling_order.as_ref().map(|f| f.nozzle_id.clone()))
     }
 }

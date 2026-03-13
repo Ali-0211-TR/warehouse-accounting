@@ -211,7 +211,7 @@ export function exportProductMovementsToPDF(
             ...data.map((order) => [
               { text: order.id || "-", fontSize: 7 },
               { text: getOrderTypeName(order.order_type, t), fontSize: 7 },
-              { text: formatDate(order.d_move), fontSize: 7 },
+              { text: formatDate(order.d_move ?? ""), fontSize: 7 },
               { text: order.client?.name || "-", fontSize: 7 },
               {
                 text: formatCurrency(order.summ),

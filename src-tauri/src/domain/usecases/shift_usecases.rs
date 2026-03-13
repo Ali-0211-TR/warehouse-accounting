@@ -20,7 +20,7 @@ pub async fn close_shift_usecase(ctx: &Ctx, data_close: Vec<ShiftData>) -> Resul
         .lock()
         .unwrap()
         .clone()
-        .ok_or(Error::Dispenser("User is not logged in".to_owned()))?;
+        .ok_or(Error::General("User is not logged in".to_owned()))?;
 
     let data = ShiftRepository::close_shift(ctx.get_db(), user_close, data_close).await?;
     ctx.active_shift.lock().unwrap().take();
@@ -34,7 +34,7 @@ pub async fn open_shift_usecase(ctx: &Ctx, open_shift: Vec<ShiftData>) -> Result
         .lock()
         .unwrap()
         .clone()
-        .ok_or(Error::Dispenser("User is not logged in".to_owned()))?;
+        .ok_or(Error::General("User is not logged in".to_owned()))?;
 
     println!("User ID for shift: {:?}", user_open.id);
     println!("Shift data: {:?}", open_shift);
@@ -43,7 +43,7 @@ pub async fn open_shift_usecase(ctx: &Ctx, open_shift: Vec<ShiftData>) -> Result
     let user_id = user_open
         .id
         .clone()
-        .ok_or(Error::Dispenser("User ID is None".to_owned()))?;
+        .ok_or(Error::General("User ID is None".to_owned()))?;
     match UserRepository::get_by_id(ctx.get_db(), user_id.clone()).await {
         Ok(db_user) => println!("User exists in DB: {:?}", db_user.id),
         Err(e) => {
@@ -51,7 +51,7 @@ pub async fn open_shift_usecase(ctx: &Ctx, open_shift: Vec<ShiftData>) -> Result
                 "ERROR: User does not exist in DB! User ID: {}, Error: {:?}",
                 user_id, e
             );
-            return Err(Error::Dispenser(format!(
+            return Err(Error::General(format!(
                 "User with ID {} not found in database",
                 user_id
             )));

@@ -15,7 +15,6 @@ impl From<Model> for LimitEntity {
     fn from(model: Model) -> Self {
         LimitEntity {
             id: Some(model.id),
-            card: None,
             limit_type: LimitType::from_str(&model.limit_type).unwrap_or_default(),
             product: None,
             d_begin: model.d_begin,

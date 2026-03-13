@@ -160,7 +160,7 @@ function createWordTable(
             ],
           }),
           new TableCell({
-            children: [new Paragraph({ text: formatDate(order.d_move) })],
+            children: [new Paragraph({ text: formatDate(order.d_move ?? "") })],
           }),
           new TableCell({
             children: [

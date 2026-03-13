@@ -17,7 +17,6 @@ export const emptyClient: ClientEntity = {
   contact: null,
   login: "",
   password: "",
-  cards: [],
   created_at: "",
   updated_at: "",
   deleted_at: null,

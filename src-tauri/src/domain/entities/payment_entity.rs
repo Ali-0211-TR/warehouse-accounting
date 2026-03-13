@@ -5,7 +5,7 @@ use ts_rs::TS;
 
 use crate::shared::types::PaymentType;
 
-use super::{card_entity::CardEntity, order_entity::OrderEntity};
+use super::order_entity::OrderEntity;
 
 #[cfg_attr(not(any(target_os = "android", target_os = "ios")), derive(TS))]
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -27,7 +27,6 @@ pub struct PaymentEntity {
     pub ticket: String,
     pub discard: Option<String>,
     pub data: String,
-    pub card: Option<CardEntity>,
     // Sync metadata
     pub created_at: String,
     pub updated_at: String,

@@ -20,8 +20,6 @@ pub struct Model {
     pub company_address: Option<String>,
     pub station_name: Option<String>,
     pub shop_name: Option<String>,
-    pub license_key: Option<String>,
-    pub license_expiry: Option<String>,
     pub last_sync_at: Option<String>,
     pub is_registered: bool,
     pub created_at: String,
@@ -43,32 +41,16 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::cameras::Entity")]
-    Cameras,
-    #[sea_orm(has_many = "super::cards::Entity")]
-    Cards,
     #[sea_orm(has_many = "super::clients::Entity")]
     Clients,
-    #[sea_orm(has_many = "super::contract_cars::Entity")]
-    ContractCars,
-    #[sea_orm(has_many = "super::contract_products::Entity")]
-    ContractProducts,
-    #[sea_orm(has_many = "super::contracts::Entity")]
-    Contracts,
     #[sea_orm(has_many = "super::discounts::Entity")]
     Discounts,
-    #[sea_orm(has_many = "super::dispenser_ports::Entity")]
-    DispenserPorts,
-    #[sea_orm(has_many = "super::dispensers::Entity")]
-    Dispensers,
     #[sea_orm(has_many = "super::groups::Entity")]
     Groups,
     #[sea_orm(has_many = "super::limits::Entity")]
     Limits,
     #[sea_orm(has_many = "super::marks::Entity")]
     Marks,
-    #[sea_orm(has_many = "super::nozzles::Entity")]
-    Nozzles,
     #[sea_orm(has_many = "super::orders::Entity")]
     Orders,
     #[sea_orm(has_many = "super::prices::Entity")]
@@ -79,8 +61,6 @@ pub enum Relation {
     Roles,
     #[sea_orm(has_many = "super::shifts::Entity")]
     Shifts,
-    #[sea_orm(has_many = "super::tanks::Entity")]
-    Tanks,
     #[sea_orm(has_many = "super::taxes::Entity")]
     Taxes,
     #[sea_orm(has_many = "super::units::Entity")]
@@ -89,57 +69,15 @@ pub enum Relation {
     Users,
 }
 
-impl Related<super::cameras::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Cameras.def()
-    }
-}
-
-impl Related<super::cards::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Cards.def()
-    }
-}
-
 impl Related<super::clients::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Clients.def()
     }
 }
 
-impl Related<super::contract_cars::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::ContractCars.def()
-    }
-}
-
-impl Related<super::contract_products::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::ContractProducts.def()
-    }
-}
-
-impl Related<super::contracts::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Contracts.def()
-    }
-}
-
 impl Related<super::discounts::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Discounts.def()
-    }
-}
-
-impl Related<super::dispenser_ports::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::DispenserPorts.def()
-    }
-}
-
-impl Related<super::dispensers::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Dispensers.def()
     }
 }
 
@@ -158,12 +96,6 @@ impl Related<super::limits::Entity> for Entity {
 impl Related<super::marks::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Marks.def()
-    }
-}
-
-impl Related<super::nozzles::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Nozzles.def()
     }
 }
 
@@ -194,12 +126,6 @@ impl Related<super::roles::Entity> for Entity {
 impl Related<super::shifts::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Shifts.def()
-    }
-}
-
-impl Related<super::tanks::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Tanks.def()
     }
 }
 

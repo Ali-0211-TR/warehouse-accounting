@@ -23,16 +23,11 @@ pub async fn into_entity(
     use entity::payments;
 
     let client = match model.client_id {
-        Some(client_id) => ClientRepository::get_by_id(db.clone(), client_id, false)
+        Some(client_id) => ClientRepository::get_by_id(db.clone(), client_id)
             .await
             .ok(),
         None => None,
     };
-
-    let fueling_order_item_id = items
-        .iter()
-        .find(|item| item.fueling_order.is_some())
-        .and_then(|order_item| order_item.id.clone());
 
     // Fetch payments for this order
     let db_conn = db.get_db()?;
@@ -54,7 +49,6 @@ pub async fn into_entity(
             ticket: p.ticket,
             discard: p.discard,
             data: p.data,
-            card: None, // Could be loaded if needed
             created_at: p.created_at,
             updated_at: p.updated_at,
             deleted_at: p.deleted_at,
@@ -73,9 +67,6 @@ pub async fn into_entity(
         discard: model.discard,
         client,
         items,
-        fueling_order_item_id,
-        contract: None,
-        contract_car: None,
         payments: payments_vec,
         pictures: vec![],
         created_at: model.created_at,
@@ -98,11 +89,6 @@ pub fn into_entity_with_preloaded(
         .as_ref()
         .and_then(|cid| clients_map.get(cid).cloned());
 
-    let fueling_order_item_id = items
-        .iter()
-        .find(|item| item.fueling_order.is_some())
-        .and_then(|order_item| order_item.id.clone());
-
     let payments_vec = payments_map
         .get(&model.id)
         .cloned()
@@ -119,9 +105,6 @@ pub fn into_entity_with_preloaded(
         discard: model.discard,
         client,
         items,
-        fueling_order_item_id,
-        contract: None,
-        contract_car: None,
         payments: payments_vec,
         pictures: vec![],
         created_at: model.created_at,
@@ -182,8 +165,8 @@ impl From<OrderEntity> for ord::ActiveModel {
             tax: ActiveValue::Set(entity.tax),
             discard: ActiveValue::Set(entity.discard),
             client_id: ActiveValue::Set(entity.client.and_then(|c| c.id)),
-            contract_id: ActiveValue::Set(entity.contract.and_then(|c| c.id)),
-            contract_car_id: ActiveValue::Set(entity.contract_car.and_then(|c| c.id)),
+            contract_id: ActiveValue::Set(None),
+            contract_car_id: ActiveValue::Set(None),
             created_at: ActiveValue::Set(entity.created_at),
             updated_at: ActiveValue::Set(entity.updated_at),
             deleted_at: ActiveValue::Set(entity.deleted_at),
@@ -203,8 +186,6 @@ impl From<OrderColumn> for entity::orders::Column {
             OrderColumn::Tax => entity::orders::Column::Tax,
             OrderColumn::Discard => entity::orders::Column::Discard,
             OrderColumn::ClientId => entity::orders::Column::ClientId,
-            OrderColumn::ContractId => entity::orders::Column::ContractId,
-            OrderColumn::ContractCarId => entity::orders::Column::ContractCarId,
         }
     }
 }

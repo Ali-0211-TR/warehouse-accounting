@@ -1,7 +1,6 @@
 import type { ShiftData, ShiftEntity } from "@/entities/shift";
 import { ShiftDataActions } from "./ShiftDataActions";
 import { ShiftFinancialSummary } from "./ShiftFinancialSummary";
-import { formatVolume } from "@/shared/lib/format-data";
 import { Badge } from "@/shared/ui/shadcn/badge";
 import { Button } from "@/shared/ui/shadcn/button";
 import {
@@ -212,102 +211,7 @@ export function ShiftViewDialog({
           </div>
         </div>
 
-        {/* Dispensers Data Table */}
-        {data.some(
-          item => item.dispensers_data && item.dispensers_data.length > 0
-        ) && (
-            <div className="space-y-4">
-              <h5 className="font-medium text-base flex items-center gap-2">
-                <Gauge className="h-4 w-4 text-green-600" />
-                {t("shift_data.dispensers_data")}
-              </h5>
-              <div className="overflow-x-auto border rounded-lg">
-                <table className="data-table w-full border-collapse min-w-[1300px]">
-                  <thead>
-                    <tr className="bg-muted/50">
-                      <th className="border p-3 text-left font-medium">
-                        {t("shift_data.number")}
-                      </th>
-                      <th className="border p-3 text-left font-medium">
-                        {t("shift_data.dispenser_name")}
-                      </th>
-                      <th className="border p-3 text-left font-medium">
-                        {t("shift_data.nozzle_address")}
-                      </th>
-                      <th className="border p-3 text-left font-medium">
-                        {t("shift_data.shift_volume")}
-                      </th>
-                      <th className="border p-3 text-left font-medium">
-                        {t("shift_data.shift_amount")}
-                      </th>
-                      <th className="border p-3 text-left font-medium">
-                        {t("shift_data.total_volume")}
-                      </th>
-                      <th className="border p-3 text-left font-medium">
-                        {t("shift_data.total_amount")}
-                      </th>
-                      <th className="border p-3 text-left font-medium">
-                        {t("shift_data.calc_volume")}
-                      </th>
-                      <th className="border p-3 text-left font-medium">
-                        {t("shift_data.calc_amount")}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.flatMap(
-                      (tankItem, tankIndex) =>
-                        tankItem.dispensers_data?.map(
-                          (dispenserItem, dispenserIndex) => (
-                            <tr
-                              key={`${tankIndex}-${dispenserIndex}`}
-                              className="hover:bg-muted/30 transition-colors"
-                            >
-                              <td className="border p-3 text-center font-mono font-medium bg-blue-50/50 whitespace-nowrap overflow-hidden text-ellipsis max-w-[100px]">
-                                {tankItem.number}
-                              </td>
-                              <td className="border p-3 text-center font-mono font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
-                                {dispenserItem.dispenser_name || "-"}
-                              </td>
-                              <td className="border p-3 text-center font-mono font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">
-                                {dispenserItem.nozzle_addres || "-"}
-                              </td>
-                              <td className="border p-3 text-right font-mono whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
-                                {formatVolume(dispenserItem.shift_volume || 0)} {t("shift.unit.liter")}
-                              </td>
-                              <td className="border p-3 text-right font-mono whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
-                                {dispenserItem.shift_amount || 0} {t("fuel_movements.unit.sum", "сум")}
-                              </td>
-                              <td className="border p-3 text-right whitespace-nowrap overflow-hidden text-ellipsis max-w-[180px]">
-                                <div className="flex items-center justify-end gap-2">
-                                  <Droplets className="h-4 w-4 text-blue-600 flex-shrink-0" />
-                                  <span className="font-mono font-semibold truncate">
-                                    {formatVolume(dispenserItem.total_volume || 0)} {t("shift.unit.liter")}
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="border p-3 text-right font-mono whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
-                                {dispenserItem.total_amount || 0} {t("currency.sum")}
-                              </td>
-                              <td className="border p-3 text-right font-mono whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
-                                {formatVolume(dispenserItem.calc_volume || 0)} {t("shift.unit.liter")}
-                              </td>
-                              <td className="border p-3 text-right whitespace-nowrap overflow-hidden text-ellipsis max-w-[180px]">
-                                <div className="flex items-center justify-end gap-2">
-                                  <span className="font-mono font-semibold text-green-700 truncate">
-                                    {dispenserItem.calc_amount || 0} {t("currency.sum")}
-                                  </span>
-                                </div>
-                              </td>
-                            </tr>
-                          )
-                        ) || []
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
+
       </div>
     );
   };

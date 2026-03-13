@@ -29,8 +29,6 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::contract_products::Entity")]
-    ContractProducts,
     #[sea_orm(
         belongs_to = "super::device_config::Entity",
         from = "Column::DeviceId",
@@ -55,8 +53,6 @@ pub enum Relation {
     OrderItems,
     #[sea_orm(has_many = "super::prices::Entity")]
     Prices,
-    #[sea_orm(has_many = "super::tanks::Entity")]
-    Tanks,
     #[sea_orm(has_many = "super::tax_to_product::Entity")]
     TaxToProduct,
     #[sea_orm(
@@ -67,12 +63,6 @@ pub enum Relation {
         on_delete = "NoAction"
     )]
     Units,
-}
-
-impl Related<super::contract_products::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::ContractProducts.def()
-    }
 }
 
 impl Related<super::device_config::Entity> for Entity {
@@ -108,12 +98,6 @@ impl Related<super::order_items::Entity> for Entity {
 impl Related<super::prices::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Prices.def()
-    }
-}
-
-impl Related<super::tanks::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Tanks.def()
     }
 }
 

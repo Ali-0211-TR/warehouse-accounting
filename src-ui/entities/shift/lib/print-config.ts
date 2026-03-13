@@ -242,49 +242,6 @@ function generateTankDataSection(t: TFunction, data: ShiftData[], title: string)
         <td class="text-right">${tank.volume_water.toFixed(2)}</td>
       </tr>
     `;
-
-    // Данные ТРК для этого резервуара
-    if (tank.dispensers_data && tank.dispensers_data.length > 0) {
-      html += `
-        <tr>
-          <td colspan="8" style="padding: 0;">
-            <div style="padding: 10px; background-color: #fafafa;">
-              <div class="subsection-title">${t("dispenser.data", "Данные ТРК")}:</div>
-              <table class="data-table" style="margin: 0;">
-                <thead>
-                  <tr>
-                    <th>${t("dispenser.name", "ТРК")}</th>
-                    <th>${t("dispenser.nozzle", "Пистолет")}</th>
-                    <th class="text-right">${t("dispenser.shift_volume", "Объём за смену (л)")}</th>
-                    <th class="text-right">${t("dispenser.shift_amount", "Сумма за смену")}</th>
-                    <th class="text-right">${t("dispenser.total_volume", "Общий объём (л)")}</th>
-                    <th class="text-right">${t("dispenser.calc_volume", "Расчётный объём (л)")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-      `;
-
-      for (const dispenser of tank.dispensers_data) {
-        html += `
-          <tr>
-            <td>${dispenser.dispenser_name}</td>
-            <td class="text-center">${dispenser.nozzle_addres}</td>
-            <td class="text-right">${dispenser.shift_volume.toFixed(2)}</td>
-            <td class="text-right">${dispenser.shift_amount.toFixed(2)}</td>
-            <td class="text-right">${dispenser.total_volume.toFixed(2)}</td>
-            <td class="text-right">${dispenser.calc_volume.toFixed(2)}</td>
-          </tr>
-        `;
-      }
-
-      html += `
-                </tbody>
-              </table>
-            </div>
-          </td>
-        </tr>
-      `;
-    }
   }
 
   html += `
@@ -326,15 +283,6 @@ function generateVolumeDifferenceSection(
     if (tankClose) {
       const diff = tankOpen.volume_current - tankClose.volume_current;
 
-      // Считаем общий объём отпущенного топлива по ТРК
-      let totalDispensed = 0;
-      if (tankClose.dispensers_data) {
-        totalDispensed = tankClose.dispensers_data.reduce(
-          (sum, d) => sum + d.shift_volume,
-          0
-        );
-      }
-
       html += `
         <tr>
           <td class="text-center">${tankOpen.number}</td>
@@ -344,7 +292,7 @@ function generateVolumeDifferenceSection(
           <td class="text-right" style="font-weight: bold; color: ${diff < 0 ? '#ef4444' : '#22c55e'};">
             ${diff > 0 ? '+' : ''}${diff.toFixed(2)}
           </td>
-          <td class="text-right">${totalDispensed.toFixed(2)}</td>
+          <td class="text-right">0.00</td>
         </tr>
       `;
     }

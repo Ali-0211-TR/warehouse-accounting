@@ -21,7 +21,7 @@ export const emptyDiscount: DiscountEntity = {
 export const discountValidationSchema = z.object({
   id: z.string().nullable(),
   name: z.string().min(1, { message: "validation.discount.name_required" }),
-  discount_type: z.enum(["Price", "Card"], {
+  discount_type: z.enum(["Price", "Percentage"], {
     errorMap: () => ({ message: "validation.discount.type_required" }),
   }),
   discount_bound_type: z.enum(["Volume", "Money"], {

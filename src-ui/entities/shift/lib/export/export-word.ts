@@ -129,39 +129,6 @@ export async function exportShiftToWord(
     ]);
 
     children.push(createWordTable([tankCloseHeaders, ...tankCloseRows], true));
-
-    // Данные ТРК для каждого резервуара
-    shift.data_close.forEach(tank => {
-      if (tank.dispensers_data && tank.dispensers_data.length > 0) {
-        children.push(
-          new Paragraph({
-            children: [
-              new TextRun({
-                text: `${t("dispenser.data", "Данные ТРК")} - ${t("tank.number", "Резервуар")} ${tank.number} (${tank.gas})`,
-                bold: true,
-              })
-            ],
-            spacing: { before: 300, after: 150 },
-          })
-        );
-
-        const dispenserHeaders = [
-          t("dispenser.name", "ТРК"),
-          t("dispenser.nozzle", "Пистолет"),
-          t("dispenser.shift_volume", "Объём за смену (л)"),
-          t("dispenser.shift_amount", "Сумма за смену"),
-        ];
-
-        const dispenserRows = tank.dispensers_data.map(d => [
-          d.dispenser_name,
-          d.nozzle_addres.toString(),
-          d.shift_volume.toFixed(2),
-          d.shift_amount.toFixed(2),
-        ]);
-
-        children.push(createWordTable([dispenserHeaders, ...dispenserRows], true));
-      }
-    });
   }
 
   // Изменение объёмов
@@ -185,7 +152,6 @@ export async function exportShiftToWord(
       t("shift.volume_start", "Объём начало (л)"),
       t("shift.volume_end", "Объём конец (л)"),
       t("shift.volume_diff", "Разница (л)"),
-      t("shift.dispensed", "Отпущено по ТРК (л)"),
     ];
 
     const diffRows = shift.data_open.map(tankOpen => {
@@ -193,7 +159,6 @@ export async function exportShiftToWord(
       if (!tankClose) return null;
 
       const diff = tankOpen.volume_current - tankClose.volume_current;
-      const totalDispensed = tankClose.dispensers_data?.reduce((sum, d) => sum + d.shift_volume, 0) || 0;
 
       return [
         tankOpen.number.toString(),
@@ -201,7 +166,6 @@ export async function exportShiftToWord(
         tankOpen.volume_current.toFixed(2),
         tankClose.volume_current.toFixed(2),
         `${diff > 0 ? '+' : ''}${diff.toFixed(2)}`,
-        totalDispensed.toFixed(2),
       ];
     }).filter(Boolean) as string[][];
 

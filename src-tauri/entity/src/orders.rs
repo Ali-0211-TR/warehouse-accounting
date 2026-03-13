@@ -36,22 +36,6 @@ pub enum Relation {
     )]
     Clients,
     #[sea_orm(
-        belongs_to = "super::contract_cars::Entity",
-        from = "Column::ContractCarId",
-        to = "super::contract_cars::Column::Id",
-        on_update = "NoAction",
-        on_delete = "NoAction"
-    )]
-    ContractCars,
-    #[sea_orm(
-        belongs_to = "super::contracts::Entity",
-        from = "Column::ContractId",
-        to = "super::contracts::Column::Id",
-        on_update = "NoAction",
-        on_delete = "NoAction"
-    )]
-    Contracts,
-    #[sea_orm(
         belongs_to = "super::device_config::Entity",
         from = "Column::DeviceId",
         to = "super::device_config::Column::DeviceId",
@@ -70,18 +54,6 @@ pub enum Relation {
 impl Related<super::clients::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Clients.def()
-    }
-}
-
-impl Related<super::contract_cars::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::ContractCars.def()
-    }
-}
-
-impl Related<super::contracts::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Contracts.def()
     }
 }
 

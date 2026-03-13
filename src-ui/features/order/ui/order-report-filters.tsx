@@ -1,6 +1,5 @@
 import { ClientEntity, useClientStore } from "@/entities/client";
 import { ClientSelector } from "@/entities/client/ui/ClientSelector";
-import { useContractStore } from "@/entities/contract";
 import { useOrderMovementStore } from "@/entities/order/model/order-movement-store";
 import { orderFilterSchema } from "@/entities/order/model/schemas";
 import { useShiftStore } from "@/entities/shift";
@@ -173,7 +172,6 @@ export function OrderReportFilters({
 }: OrderFiltersProps) {
   const { t } = useTranslation();
   const { clients, loadClients } = useClientStore();
-  const { loadContracts } = useContractStore();
   const { shifts, loadShifts } = useShiftStore();
   const orderTypeOptions = getOrderTypeOptions();
   const products = useProductStore((s) => s.products);
@@ -208,12 +206,11 @@ export function OrderReportFilters({
   useEffect(() => {
     if (open) {
       loadClients();
-      loadContracts();
       loadShifts();
       loadProducts();
       loadGroups();
     }
-  }, [open, loadClients, loadContracts, loadShifts, loadProducts, loadGroups]);
+  }, [open, loadClients, loadShifts, loadProducts, loadGroups]);
 
   const form = useForm<z.infer<typeof orderFilterSchema>>({
     resolver: zodResolver(orderFilterSchema),
